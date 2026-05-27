@@ -74,7 +74,7 @@ export default function App() {
   const [adminPassword, setAdminPassword] = useState('');
   const [showPassword, setShowPassword] = useState(false);
 
-  // Lista de serviços oferecidos por Brenda Heredia Beauty (Atualizada com Esmaltação em Gel)
+  // Lista de serviços oferecidos por Brenda Heredia Beauty
   const services = [
     { id: 'esmaltacao_gel', name: 'Esmaltação em Gel', category: 'Novos & Blindagem', duration: '1h30', price: 50, desc: 'Aplicação de esmalte em gel premium com secagem na cabine LED. Brilho duradouro por semanas sem descascar.' },
     { id: 'banho_gel', name: 'Banho de Gel', category: 'Novos & Blindagem', duration: '2h45', price: 85, desc: 'Ideal para blindar e fortalecer o crescimento das unhas naturais com camada de gel premium.' },
@@ -165,7 +165,7 @@ export default function App() {
       return app;
     });
     saveAppointmentsState(updated);
-    showToast(`Agendamento atualizado para ${newStatus}!`, "success");
+    showToast(`Agendamento updated para ${newStatus}!`, "success");
   };
 
   const handleDeleteAppointment = async (id) => {
@@ -174,7 +174,7 @@ export default function App() {
     showToast("Agendamento removido.", "info");
   };
 
-  // --- CONTROLO DO SIMULADOR ---
+  // --- CONTROLE DO SIMULADOR ---
   const [chatMessages, setChatMessages] = useState([
     { sender: 'bot', text: 'Olá! ✨ Seja muito bem-vinda ao espaço Brenda Heredia Beauty. Sou a sua assistente virtual.', time: 'Agora' },
     { sender: 'bot', text: 'Deseja agendar um serviço, consultar valores ou falar conosco? Selecione uma das opções abaixo:', time: 'Agora', isOptions: true }
@@ -283,7 +283,7 @@ export default function App() {
         {activeTab === 'simulator' && (
           <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-start animate-fadeIn">
             
-            {/* Esquerda: GUIA DE ATENDIMENTO PARA A CLIENTE (ALTERADO) */}
+            {/* Esquerda: GUIA DE ATENDIMENTO PARA A CLIENTE */}
             <div className="lg:col-span-5 space-y-6">
               <div className="bg-white p-6 rounded-2xl border border-[#F0E6DC] shadow-sm">
                 <span className="text-[10px] uppercase tracking-widest font-bold text-[#B57C74] bg-[#F7E6E3] px-2 py-1 rounded">Agendamento Fácil</span>
@@ -330,7 +330,7 @@ export default function App() {
               <div className="bg-[#FAF6F0] p-4 rounded-xl border border-[#EBE0D5] flex gap-3 items-start">
                 <AlertCircle className="w-5 h-5 text-[#B57C74] shrink-0 mt-0.5" />
                 <p className="text-xs text-[#7D6B63] leading-relaxed">
-                  💡 **Dica de beleza:** Agora você também pode agendar a nossa **Esmaltação em Gel**, perfeita para quem quer unhas impecáveis, brilhantes e secas na hora!
+                  💡 <strong className="font-bold text-[#4A3F3B]">Dica de beleza:</strong> Agora você também pode agendar a nossa <strong className="font-bold text-[#4A3F3B]">Esmaltação em Gel</strong>, perfeita para quem quer unhas impecáveis, brilhantes e secas na hora!
                 </p>
               </div>
             </div>
@@ -676,7 +676,7 @@ function BookingWizard({ services, appointments, onComplete }) {
   const [clientType, setClientType] = useState('Novata'); 
   const [notes, setNotes] = useState('');
 
-  // Estados de navegação do calendário mensal completo (Maio 2026)
+  // Estados de navigation do calendário mensal completo (Maio 2026)
   const todayDate = new Date(2026, 4, 27); 
   const [viewDate, setViewDate] = useState(new Date(2026, 4, 1)); 
 
