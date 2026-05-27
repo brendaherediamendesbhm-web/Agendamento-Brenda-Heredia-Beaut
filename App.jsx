@@ -74,8 +74,9 @@ export default function App() {
   const [adminPassword, setAdminPassword] = useState('');
   const [showPassword, setShowPassword] = useState(false);
 
-  // Lista de serviços oferecidos por Brenda Heredia Beauty
+  // Lista de serviços oferecidos por Brenda Heredia Beauty (Atualizada com Esmaltação em Gel)
   const services = [
+    { id: 'esmaltacao_gel', name: 'Esmaltação em Gel', category: 'Novos & Blindagem', duration: '1h30', price: 50, desc: 'Aplicação de esmalte em gel premium com secagem na cabine LED. Brilho duradouro por semanas sem descascar.' },
     { id: 'banho_gel', name: 'Banho de Gel', category: 'Novos & Blindagem', duration: '2h45', price: 85, desc: 'Ideal para blindar e fortalecer o crescimento das unhas naturais com camada de gel premium.' },
     { id: 'along_f1', name: 'Alongamento Molde F1', category: 'Novos & Blindagem', duration: '3h00', price: 100, desc: 'Extensão rápida e sofisticada utilizando a técnica moderna do Molde F1.' },
     { id: 'manut_banho', name: 'Manutenção de Banho de Gel', category: 'Manutenções', duration: '2h15', price: 65, desc: 'Manutenção periódica para repor a estrutura do gel nas unhas em crescimento.' },
@@ -173,7 +174,7 @@ export default function App() {
     showToast("Agendamento removido.", "info");
   };
 
-  // --- CONTROLE DO SIMULADOR ---
+  // --- CONTROLO DO SIMULADOR ---
   const [chatMessages, setChatMessages] = useState([
     { sender: 'bot', text: 'Olá! ✨ Seja muito bem-vinda ao espaço Brenda Heredia Beauty. Sou a sua assistente virtual.', time: 'Agora' },
     { sender: 'bot', text: 'Deseja agendar um serviço, consultar valores ou falar conosco? Selecione uma das opções abaixo:', time: 'Agora', isOptions: true }
@@ -282,35 +283,35 @@ export default function App() {
         {activeTab === 'simulator' && (
           <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-start animate-fadeIn">
             
-            {/* Esquerda: Explicação Teórica para a Profissional */}
+            {/* Esquerda: GUIA DE ATENDIMENTO PARA A CLIENTE (ALTERADO) */}
             <div className="lg:col-span-5 space-y-6">
               <div className="bg-white p-6 rounded-2xl border border-[#F0E6DC] shadow-sm">
-                <span className="text-[10px] uppercase tracking-widest font-bold text-[#B57C74] bg-[#F7E6E3] px-2 py-1 rounded">Guia do Seu Sistema</span>
-                <h2 className="text-2xl font-serif-elegant text-[#4A3F3B] mt-3">Como funciona o seu robô Brenda?</h2>
+                <span className="text-[10px] uppercase tracking-widest font-bold text-[#B57C74] bg-[#F7E6E3] px-2 py-1 rounded">Agendamento Fácil</span>
+                <h2 className="text-2xl font-serif-elegant text-[#4A3F3B] mt-3">Como garantir seu horário?</h2>
                 <p className="text-sm text-[#7D6B63] mt-3 leading-relaxed">
-                  Para não perder tempo respondendo às mesmas mensagens no WhatsApp, este robô atende a sua cliente instantaneamente 24h por dia. Ele faz o filtro inicial e entrega o link da sua agenda online personalizada.
+                  Seja muito bem-vinda! Desenvolvemos essa ferramenta para você escolher seus procedimentos prediletos e reservar o seu momento de autocuidado de forma rápida, em menos de um minuto.
                 </p>
 
                 <div className="mt-6 space-y-4">
                   <div className="flex gap-3">
                     <div className="w-8 h-8 rounded-full bg-[#FAF6F0] flex items-center justify-center text-xs font-bold text-[#B57C74] shrink-0 border border-[#F0E6DC]">1</div>
                     <div>
-                      <h4 className="text-xs font-bold text-[#4A3F3B]">Filtro de Atendimento</h4>
-                      <p className="text-xs text-[#7D6B63] mt-0.5">O robô identifica se a cliente quer alongamento novo, manutenção ou apenas tirar dúvidas.</p>
+                      <h4 className="text-xs font-bold text-[#4A3F3B]">Escolha no Chat ao lado</h4>
+                      <p className="text-xs text-[#7D6B63] mt-0.5">Selecione uma das opções numéricas no painel do celular simulado para ver valores e informações de endereço.</p>
                     </div>
                   </div>
                   <div className="flex gap-3">
                     <div className="w-8 h-8 rounded-full bg-[#FAF6F0] flex items-center justify-center text-xs font-bold text-[#B57C74] shrink-0 border border-[#F0E6DC]">2</div>
                     <div>
-                      <h4 className="text-xs font-bold text-[#4A3F3B]">Envio do Link de Agenda</h4>
-                      <p className="text-xs text-[#7D6B63] mt-0.5">O bot envia um botão exclusivo. Ao clicar, a cliente abre apenas o portal de agendamento na tela inteira do celular dela.</p>
+                      <h4 className="text-xs font-bold text-[#4A3F3B]">Abra a Agenda Online</h4>
+                      <p className="text-xs text-[#7D6B63] mt-0.5">Clique no botão "ABRIR AGENDA ONLINE" enviado pela assistente ou navegue pelas abas superiores.</p>
                     </div>
                   </div>
                   <div className="flex gap-3">
                     <div className="w-8 h-8 rounded-full bg-[#FAF6F0] flex items-center justify-center text-xs font-bold text-[#B57C74] shrink-0 border border-[#F0E6DC]">3</div>
                     <div>
-                      <h4 className="text-xs font-bold text-[#4A3F3B]">Controle na Sua Mão</h4>
-                      <p className="text-xs text-[#7D6B63] mt-0.5">O agendamento cai no seu painel privado onde você pode aprovar, cancelar ou enviar o lembrete de confirmação de segurança.</p>
+                      <h4 className="text-xs font-bold text-[#4A3F3B]">Confirme e Relaxe</h4>
+                      <p className="text-xs text-[#7D6B63] mt-0.5">Escolha o melhor dia e horário na grade mensal e preencha seus dados de contato. Seu horário exclusivo estará salvo!</p>
                     </div>
                   </div>
                 </div>
@@ -320,7 +321,7 @@ export default function App() {
                     onClick={() => setActiveTab('booking')}
                     className="w-full bg-[#E5A8A3] hover:bg-[#DCA19C] text-white py-3 px-4 rounded-xl text-xs font-bold tracking-wider uppercase transition-all shadow-sm flex items-center justify-center gap-2"
                   >
-                    Abrir Agenda Online Diretamente
+                    Ir Direto para a Agenda Online
                     <ChevronRight className="w-4 h-4" />
                   </button>
                 </div>
@@ -329,7 +330,7 @@ export default function App() {
               <div className="bg-[#FAF6F0] p-4 rounded-xl border border-[#EBE0D5] flex gap-3 items-start">
                 <AlertCircle className="w-5 h-5 text-[#B57C74] shrink-0 mt-0.5" />
                 <p className="text-xs text-[#7D6B63] leading-relaxed">
-                  <strong>Simule o comportamento do bot:</strong> Use o celular ao lado para testar a experiência de uma cliente. Veja como as respostas automáticas resolvem a dúvida em segundos!
+                  💡 **Dica de beleza:** Agora você também pode agendar a nossa **Esmaltação em Gel**, perfeita para quem quer unhas impecáveis, brilhantes e secas na hora!
                 </p>
               </div>
             </div>
@@ -755,6 +756,7 @@ function BookingWizard({ services, appointments, onComplete }) {
 
         const existingService = services.find((s) => s.id === app.serviceId || s.name === app.serviceName);
         const existingDuration = existingService ? durToMins(existingService.duration) : 120; 
+
         const appEnd = appStart + existingDuration;
 
         return (slotStart < appEnd && slotEnd > appStart);
@@ -873,7 +875,7 @@ function BookingWizard({ services, appointments, onComplete }) {
                           
                           <div className="flex items-center gap-1 text-[10px] text-[#A6948E] font-medium mt-2 pt-2 border-t border-[#FAF6F0]">
                             <Clock className="w-3 h-3 text-[#E5A8A3]" />
-                            Durações previstas: {service.duration}
+                            Duração prevista: {service.duration}
                           </div>
                         </div>
                       ))}
