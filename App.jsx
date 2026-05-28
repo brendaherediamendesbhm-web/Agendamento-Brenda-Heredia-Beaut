@@ -75,9 +75,9 @@ export default function App() {
   const [showPassword, setShowPassword] = useState(false);
   const [loginError, setLoginError] = useState(false); 
 
-  // FORÇA A PÁGINA IR PARA O TOPO SEMPRE QUE SELECIONAR UMA ABA NOVA
+  // FORÇA A PÁGINA IR PARA O TOPO SEMPRE QUE SELECIONAR UMA ABA NOVA (SEM TRANCO)
   useEffect(() => {
-    window.scrollTo({ top: 0, behavior: 'smooth' });
+    window.scrollTo(0, 0);
   }, [activeTab]);
 
   // Lista de serviços oferecidos por Brenda Heredia Beauty
@@ -158,10 +158,10 @@ export default function App() {
   const [chatInput, setChatInput] = useState('');
   const chatEndRef = useRef(null);
 
-  // SCROLL AJUSTADO: AGORA MOVE APENAS O CONTEÚDO DO CHAT DO CELULAR, SEM PUXAR O SITE TODO
+  // SOLUÇÃO DO PASSO DEFENSIVO: ATUALIZA O CHAT SEM QUEBRAR OU ROLAR A TELA GERAL DO SITE
   useEffect(() => {
     if (chatEndRef.current) {
-      chatEndRef.current.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+      chatEndRef.current.scrollIntoView({ behavior: 'auto', block: 'nearest' });
     }
   }, [chatMessages]);
 
@@ -1188,31 +1188,4 @@ function BookingWizard({ services, appointments, onComplete }) {
             </div>
 
             <div className="space-y-2 max-w-md mx-auto">
-              <h3 className="text-2xl font-bold font-serif-elegant text-[#4A3F3B]">Agendado com Sucesso! 💅</h3>
-              <p className="text-xs text-[#7D6B63]">Muito obrigada, <strong>{clientName}</strong>. A sua vaga exclusiva está garantida para o dia <strong>{selectedDate?.split('-').reverse().join('/')}</strong> às <strong>{selectedTime}</strong>.</p>
-            </div>
-
-            <div className="bg-[#FAF6F0] p-4 rounded-xl border border-[#EBE0D5] text-xs max-sm mx-auto space-y-2">
-              <p className="text-[#7D6B63]">
-                <strong>O que acontece agora?</strong>
-                <br />
-                O robô registrou o seu agendamento na agenda. A Brenda confirmará diretamente com você por mensagem de WhatsApp.
-              </p>
-            </div>
-
-            <div className="pt-6">
-              <button
-                type="button"
-                onClick={resetForm}
-                className="bg-white hover:bg-[#FAF6F0] text-[#B57C74] border border-[#E5A8A3] px-6 py-2.5 rounded-xl text-xs font-bold uppercase tracking-wider transition-all"
-              >
-                Fazer Novo Agendamento
-              </button>
-            </div>
-          </div>
-        )}
-
-      </div>
-    </div>
-  );
-}
+              <h3 className="text-2xl font-bold font-serif-elegant text-
