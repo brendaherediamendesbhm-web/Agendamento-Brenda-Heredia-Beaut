@@ -86,7 +86,7 @@ export default function App() {
     { id: 'conserto', name: 'Conserto de Unha Avulsa', category: 'Remoções e Extras', duration: '0h30', price: 10, desc: 'Reparação de emergência para uma unha partida ou danificada.' }
   ];
 
-  // --- LÓGICA DE ARMAZENAMENTO LOCAL (CORRIGIDA: SEM CLIENTES FANTASMAS) ---
+  // --- LÓGICA DE ARMAZENAMENTO LOCAL ---
   useEffect(() => {
     loadLocalData();
   }, []);
@@ -100,7 +100,7 @@ export default function App() {
         setAppointments([]);
       }
     } else {
-      setAppointments([]); // Começa 100% vazio, sem Mariana ou Beatriz!
+      setAppointments([]); 
     }
   };
 
@@ -188,7 +188,6 @@ export default function App() {
     }, 1000);
   };
 
-  // BLOQUEIO TOTAL: APENAS A SENHA EXCLUSIVA ENTRA, SEM EXCEÇÕES
   const handleAdminLogin = (e) => {
     e.preventDefault();
     if (adminPassword === '23181213') {
@@ -447,10 +446,12 @@ export default function App() {
                   <div className="relative">
                     <input 
                       type={showPassword ? "text" : "password"}
+                      inputMode="numeric"
+                      pattern="[0-9]*"
                       placeholder="Digite a sua senha"
                       value={adminPassword}
                       onChange={(e) => {
-                        setAdminPassword(e.target.value);
+                        setAdminPassword(e.target.value.replace(/\D/g, ''));
                         if(loginError) setLoginError(false);
                       }}
                       className="w-full bg-[#FAF6F0] text-xs px-4 py-3 rounded-xl border border-[#F0E6DC] focus:outline-none pr-10"
