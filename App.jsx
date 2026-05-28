@@ -75,6 +75,11 @@ export default function App() {
   const [showPassword, setShowPassword] = useState(false);
   const [loginError, setLoginError] = useState(false); 
 
+  // FORÇA A PÁGINA IR PARA O TOPO SEMPRE QUE SELECIONAR UMA ABA NOVA
+  useEffect(() => {
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  }, [activeTab]);
+
   // Lista de serviços oferecidos por Brenda Heredia Beauty
   const services = [
     { id: 'esmaltacao_gel', name: 'Esmaltação em Gel', category: 'Novos & Blindagem', duration: '1h30', price: 50, desc: 'Aplicação de esmalte em gel premium com secagem na cabine LED. Brilho duradouro por semanas sem descascar.' },
@@ -153,9 +158,10 @@ export default function App() {
   const [chatInput, setChatInput] = useState('');
   const chatEndRef = useRef(null);
 
+  // SCROLL AJUSTADO: AGORA MOVE APENAS O CONTEÚDO DO CHAT DO CELULAR, SEM PUXAR O SITE TODO
   useEffect(() => {
     if (chatEndRef.current) {
-      chatEndRef.current.scrollIntoView({ behavior: 'smooth' });
+      chatEndRef.current.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
     }
   }, [chatMessages]);
 
@@ -561,6 +567,8 @@ export default function App() {
                           ? parsedDate.toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit' })
                           : 'Hora inválida';
 
+                        const zapMessage = "Olá " + appointment.clientName + "! \u2728 Aqui é a Brenda Heredia. Passando para confirmar o seu horário de " + appointment.serviceName + " no dia " + formattedDate + " às " + formattedTime + ". Está tudo de pé? \u0041\u006d\u006f\u0072 \u2764\ufe0f\ud83d\udc85";
+
                         return (
                           <div key={appointment.id} className="p-6 hover:bg-[#FAF6F0]/30 transition-all flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
                             <div className="space-y-1">
@@ -590,9 +598,7 @@ export default function App() {
 
                             <div className="flex flex-wrap items-center gap-2 w-full md:w-auto justify-end">
                               <a 
-                                href={`https://wa.me/${appointment.clientPhone?.replace(/\s+/g, '')}?text=${encodeURIComponent(
-                                  `Olá ${appointment.clientName}! ✨ Aqui é a Brenda Heredia. Passando para confirmar o seu horário de ${appointment.serviceName} no dia ${formattedDate} às ${formattedTime}. Está tudo de pé? 🥰💅`
-                                )}`}
+                                href={`https://wa.me/${appointment.clientPhone?.replace(/[^0-9]/g, '')}?text=${encodeURIComponent(zapMessage)}`}
                                 target="_blank"
                                 rel="noopener noreferrer"
                                 className="bg-[#FAF6F0] hover:bg-[#F2E5D9] text-[#B57C74] border border-[#E5A8A3] px-3 py-1.5 rounded-lg text-xs font-semibold flex items-center gap-1.5 transition-all"
@@ -689,8 +695,15 @@ function BookingWizard({ services, appointments, onComplete }) {
 
     if (dayOfWeek === 0 || dayOfWeek === 6) return true;
 
-    const minDate = new Date(2026, 4, 27);
-    if (checkDate < minDate) return true;
+    const pureCheck = new Date(year, month, dayNum).setHours(0,0,0,0);
+    const pureToday = new Date(2026, 4, 27).setHours(0,0,0,0);
+    
+    if (pureCheck < pureToday) return true;
+
+    if (pureCheck === pureToday) {
+      const slotsHoje = getAvailableTimeSlots(`${year}-${String(month + 1).padStart(2, '0')}-${String(dayNum).padStart(2, '0')}`, true);
+      if (slotsHoje.length === 0) return true; 
+    }
 
     const maxDate = new Date(2026, 4, 27);
     maxDate.setDate(maxDate.getDate() + 30);
@@ -699,18 +712,19 @@ function BookingWizard({ services, appointments, onComplete }) {
     return false;
   };
 
-  const getAvailableTimeSlots = (dateStr) => {
-    if (!dateStr || !selectedService) return [];
+  const getAvailableTimeSlots = (dateStr, ignoreOverride = false) => {
+    if (!dateStr || (!selectedService && !ignoreOverride)) return [];
     
     const [year, month, dayNum] = dateStr.split('-').map(Number);
     const date = new Date(year, month - 1, dayNum);
     const day = date.getDay(); 
     
     let baseSlots = [];
+    
     if (day === 5) { 
-      baseSlots = ['08:00', '09:30', '11:00', '12:30', '14:00', '15:00'];
+      baseSlots = ['08:00', '09:30', '11:00', '12:30', '14:00', '15:30', '17:00'];
     } else { 
-      baseSlots = ['10:00', '11:30', '13:00', '14:30', '16:00', '17:00'];
+      baseSlots = ['10:00', '11:30', '13:00', '14:30', '16:00'];
     }
 
     const timeToMins = (t) => {
@@ -725,11 +739,18 @@ function BookingWizard({ services, appointments, onComplete }) {
       return h * 60 + (m || 0);
     };
 
-    const currentDuration = durToMins(selectedService.duration);
+    const currentDuration = selectedService ? durToMins(selectedService.duration) : 90;
+
+    const agoraMins = 23 * 60 + 1; 
+    const pureTodayStr = "2026-05-27";
 
     return baseSlots.filter((slotTime) => {
       const slotStart = timeToMins(slotTime);
       const slotEnd = slotStart + currentDuration;
+
+      if (dateStr === pureTodayStr) {
+        if (slotStart <= agoraMins) return false;
+      }
 
       const isOverlapping = appointments && appointments.some((app) => {
         const appDate = app.dateTime.split('T')[0];
@@ -960,7 +981,7 @@ function BookingWizard({ services, appointments, onComplete }) {
                             isSelected 
                               ? 'bg-[#E5A8A3] text-white font-bold shadow-xs'
                               : disabled 
-                                ? 'text-gray-300 bg-gray-50/50 cursor-not-allowed'
+                                ? 'text-gray-300 bg-gray-50/50 cursor-not-allowed lines-through opacity-30'
                                 : 'text-[#4A3F3B] hover:bg-[#FCF8F5] hover:text-[#B57C74] border border-[#FAF6F0]'
                           }`}
                         >
@@ -998,7 +1019,7 @@ function BookingWizard({ services, appointments, onComplete }) {
                     ) : (
                       <div className="col-span-2 p-4 text-center border border-[#FAF6F0] rounded-xl bg-rose-50/50">
                         <AlertCircle className="w-5 h-5 text-rose-400 mx-auto" />
-                        <p className="text-xs text-rose-700 mt-2 font-medium">Não há horários livres com folga suficiente para este serviço nesta data.</p>
+                        <p className="text-xs text-rose-700 mt-2 font-medium">Não há horários livres com folga suficiente para este dia ou os horários de hoje já passaram.</p>
                       </div>
                     )}
                   </div>
