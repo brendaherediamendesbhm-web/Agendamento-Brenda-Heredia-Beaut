@@ -324,7 +324,7 @@ export default function App() {
                   </div>
                 </div>
 
-                {/* Corpo das Mensagens do Chat (COMPLETAMENTE ENGESSADO CONTRA SCROLL) */}
+                {/* Corpo das Mensagens do Chat */}
                 <div className="flex-1 bg-[#FAF6F0] p-4 overflow-y-auto space-y-3 flex flex-col justify-between" style={{ backgroundImage: 'radial-gradient(#F0E6DC 1px, transparent 1px)', backgroundSize: '16px 16px' }}>
                   
                   <div className="space-y-3 flex-1 overflow-y-auto">
@@ -430,7 +430,7 @@ export default function App() {
                   <Lock className="w-6 h-6" />
                 </div>
                 <div>
-                  <h3 className="textxl font-bold font-serif-elegant text-[#4A3F3B]">Acesso Exclusivo Brenda</h3>
+                  <h3 className="text-xl font-bold font-serif-elegant text-[#4A3F3B]">Acesso Exclusivo Brenda</h3>
                   <p className="text-xs text-[#9E8B83] mt-2">Esta área contém dados confidenciais das clientes. Introduza a senha profissional para acessar.</p>
                 </div>
 
@@ -553,7 +553,8 @@ export default function App() {
                           ? parsedDate.toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit' })
                           : 'Hora inválida';
 
-                        const zapMessage = "Olá " + appointment.clientName + "! \u2728 Aqui é a Brenda Heredia. Passando para confirmar o seu horário de " + appointment.serviceName + " no dia " + formattedDate + " às " + formattedTime + ". Está tudo de pé? \u0041\u006d\u006f\u0072 \u2764\ufe0f\ud83d\udc85";
+                        // MENSAGEM ALTERADA COM AS NOVAS DESPEDIDAS EM EMOJIS (🌸💅)
+                        const zapMessage = "Oie " + appointment.clientName + "! \u2728 Aqui é a Brenda Heredia. Passando para confirmar o seu horário de " + appointment.serviceName + " no dia " + formattedDate + " às " + formattedTime + ". Está tudo de pé? \ud83c\udf38\ud83d\udc85";
 
                         return (
                           <div key={appointment.id} className="p-6 hover:bg-[#FAF6F0]/30 flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
@@ -859,7 +860,9 @@ function BookingWizard({ services, appointments, onComplete }) {
                         >
                           <div>
                             <div className="flex justify-between items-start gap-2">
-                              <h5 className="text-xs font-bold text-[#4A3F3B]">{service.name}</h5>
+                              <h5 className="text-xs font-bold text-[#4A3F3B]">
+                                {service.name}
+                              </h5>
                               <span className="text-xs font-bold text-[#8C6D62]">R$ {service.price},00</span>
                             </div>
                             <p className="text-[11px] text-[#9E8B83] mt-1 line-clamp-2 leading-relaxed">{service.desc}</p>
@@ -880,7 +883,7 @@ function BookingWizard({ services, appointments, onComplete }) {
               <button
                 disabled={!selectedService}
                 onClick={handleNextStep}
-                className={`px-6 py-2.5 rounded-xl text-xs font-bold uppercase tracking-wider flex items-center gap-1.5 ${
+                className={`px-6 py-2.5 rounded-xl text-xs font-bold uppercase tracking-wider ${
                   selectedService 
                     ? 'bg-[#E5A8A3] text-white hover:bg-[#DCA19C]' 
                     : 'bg-gray-100 text-gray-400 cursor-not-allowed'
