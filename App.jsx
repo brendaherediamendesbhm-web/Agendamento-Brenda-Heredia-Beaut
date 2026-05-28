@@ -151,6 +151,14 @@ export default function App() {
     { sender: 'bot', text: 'Deseja agendar um serviço, consultar valores ou falar conosco? Selecione uma das opções abaixo:', time: 'Agora', isOptions: true }
   ]);
   const [chatInput, setChatInput] = useState('');
+  const chatContainerRef = useRef(null); // Ref direcionada para o container de mensagens interna
+
+  // ROLAGEM INTERNA EXCLUSIVA DO CELULAR (PROIBIDO DE MEXER NO SITE GERAL)
+  useEffect(() => {
+    if (chatContainerRef.current) {
+      chatContainerRef.current.scrollTop = chatContainerRef.current.scrollHeight;
+    }
+  }, [chatMessages]);
 
   const handleSendChatMessage = (text, isSystemOption = false) => {
     if (!text.trim()) return;
@@ -324,10 +332,13 @@ export default function App() {
                   </div>
                 </div>
 
-                {/* Corpo das Mensagens do Chat */}
-                <div className="flex-1 bg-[#FAF6F0] p-4 overflow-y-auto space-y-3 flex flex-col justify-between" style={{ backgroundImage: 'radial-gradient(#F0E6DC 1px, transparent 1px)', backgroundSize: '16px 16px' }}>
-                  
-                  <div className="space-y-3 flex-1 overflow-y-auto">
+                {/* Corpo das Mensagens do Chat (REF ADICIONADA PARA ROLAR APENAS ESSA ÁREA) */}
+                <div 
+                  ref={chatContainerRef}
+                  className="flex-1 bg-[#FAF6F0] p-4 overflow-y-auto space-y-3 flex flex-col justify-between" 
+                  style={{ backgroundImage: 'radial-gradient(#F0E6DC 1px, transparent 1px)', backgroundSize: '16px 16px' }}
+                >
+                  <div className="space-y-3 flex-1">
                     <div className="text-center my-1">
                       <span className="bg-[#EBE0D5] text-[#7D6B63] text-[9px] px-2.5 py-0.5 rounded font-medium">HOJE</span>
                     </div>
@@ -553,7 +564,6 @@ export default function App() {
                           ? parsedDate.toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit' })
                           : 'Hora inválida';
 
-                        // MENSAGEM ALTERADA COM AS NOVAS DESPEDIDAS EM EMOJIS (🌸💅)
                         const zapMessage = "Oie " + appointment.clientName + "! \u2728 Aqui é a Brenda Heredia. Passando para confirmar o seu horário de " + appointment.serviceName + " no dia " + formattedDate + " às " + formattedTime + ". Está tudo de pé? \ud83c\udf38\ud83d\udc85";
 
                         return (
