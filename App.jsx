@@ -75,11 +75,6 @@ export default function App() {
   const [showPassword, setShowPassword] = useState(false);
   const [loginError, setLoginError] = useState(false); 
 
-  // FORÇA A PÁGINA IR PARA O TOPO SEMPRE QUE SELECIONAR UMA ABA NOVA (SEM TRANCO)
-  useEffect(() => {
-    window.scrollTo(0, 0);
-  }, [activeTab]);
-
   // Lista de serviços oferecidos por Brenda Heredia Beauty
   const services = [
     { id: 'esmaltacao_gel', name: 'Esmaltação em Gel', category: 'Novos & Blindagem', duration: '1h30', price: 50, desc: 'Aplicação de esmalte em gel premium com secagem na cabine LED. Brilho duradouro por semanas sem descascar.' },
@@ -156,14 +151,6 @@ export default function App() {
     { sender: 'bot', text: 'Deseja agendar um serviço, consultar valores ou falar conosco? Selecione uma das opções abaixo:', time: 'Agora', isOptions: true }
   ]);
   const [chatInput, setChatInput] = useState('');
-  const chatEndRef = useRef(null);
-
-  // SOLUÇÃO DO PASSO DEFENSIVO: ATUALIZA O CHAT SEM QUEBRAR OU ROLAR A TELA GERAL DO SITE
-  useEffect(() => {
-    if (chatEndRef.current) {
-      chatEndRef.current.scrollIntoView({ behavior: 'auto', block: 'nearest' });
-    }
-  }, [chatMessages]);
 
   const handleSendChatMessage = (text, isSystemOption = false) => {
     if (!text.trim()) return;
@@ -211,7 +198,7 @@ export default function App() {
       
       {/* --- BANNER DE INFORMAÇÃO / ALERTA DE TOAST --- */}
       {toastMessage && (
-        <div className="fixed top-5 left-1/2 transform -translate-x-1/2 z-50 flex items-center gap-3 px-4 py-3 rounded-full shadow-lg transition-all duration-300 bg-white border border-[#E5A8A3] animate-bounce">
+        <div className="fixed top-5 left-1/2 transform -translate-x-1/2 z-50 flex items-center gap-3 px-4 py-3 rounded-full shadow-lg bg-white border border-[#E5A8A3]">
           {toastType === 'success' && <CheckCircle className="w-5 h-5 text-emerald-500" />}
           {toastType === 'error' && <AlertCircle className="w-5 h-5 text-rose-500" />}
           {toastType === 'info' && <Sparkles className="w-5 h-5 text-[#E5A8A3]" />}
@@ -232,14 +219,14 @@ export default function App() {
           <nav className="flex bg-[#FAF6F0] p-1 rounded-full border border-[#EBE0D5] w-full md:w-auto overflow-x-auto">
             <button 
               onClick={() => setActiveTab('simulator')}
-              className={`flex items-center gap-2 px-4 py-2 rounded-full text-xs font-semibold transition-all duration-200 whitespace-nowrap ${activeTab === 'simulator' ? 'bg-[#E5A8A3] text-white shadow-sm' : 'text-[#7D6B63] hover:text-[#4A3F3B]'}`}
+              className={`flex items-center gap-2 px-4 py-2 rounded-full text-xs font-semibold whitespace-nowrap ${activeTab === 'simulator' ? 'bg-[#E5A8A3] text-white shadow-sm' : 'text-[#7D6B63] hover:text-[#4A3F3B]'}`}
             >
               <Smartphone className="w-4 h-4" />
               Simulador WhatsApp Bot
             </button>
             <button 
               onClick={() => setActiveTab('booking')}
-              className={`flex items-center gap-2 px-4 py-2 rounded-full text-xs font-semibold transition-all duration-200 whitespace-nowrap ${activeTab === 'booking' ? 'bg-[#E5A8A3] text-white shadow-sm' : 'text-[#7D6B63] hover:text-[#4A3F3B]'}`}
+              className={`flex items-center gap-2 px-4 py-2 rounded-full text-xs font-semibold whitespace-nowrap ${activeTab === 'booking' ? 'bg-[#E5A8A3] text-white shadow-sm' : 'text-[#7D6B63] hover:text-[#4A3F3B]'}`}
             >
               <CalendarIcon className="w-4 h-4" />
               Agenda Online (Cliente)
@@ -260,7 +247,7 @@ export default function App() {
         
         {/* ================= ABA: SIMULADOR DE BOT (WHATSAPP) ================= */}
         {activeTab === 'simulator' && (
-          <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-start animate-fadeIn">
+          <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-start">
             
             {/* Esquerda: GUIA DE ATENDIMENTO PARA A CLIENTE */}
             <div className="lg:col-span-5 space-y-6">
@@ -298,7 +285,7 @@ export default function App() {
                 <div className="mt-8 pt-6 border-t border-[#F0E6DC] text-center">
                   <button 
                     onClick={() => setActiveTab('booking')}
-                    className="w-full bg-[#E5A8A3] hover:bg-[#DCA19C] text-white py-3 px-4 rounded-xl text-xs font-bold tracking-wider uppercase transition-all shadow-sm flex items-center justify-center gap-2"
+                    className="w-full bg-[#E5A8A3] hover:bg-[#DCA19C] text-white py-3 px-4 rounded-xl text-xs font-bold tracking-wider uppercase flex items-center justify-center gap-2"
                   >
                     Ir Direto para a Agenda Online
                     <ChevronRight className="w-4 h-4" />
@@ -337,7 +324,7 @@ export default function App() {
                   </div>
                 </div>
 
-                {/* Corpo das Mensagens do Chat */}
+                {/* Corpo das Mensagens do Chat (Sem scroll forçado na página externa) */}
                 <div className="flex-1 bg-[#FAF6F0] p-4 overflow-y-auto space-y-3 flex flex-col justify-between" style={{ backgroundImage: 'radial-gradient(#F0E6DC 1px, transparent 1px)', backgroundSize: '16px 16px' }}>
                   
                   <div className="space-y-3 flex-1 overflow-y-auto">
@@ -346,11 +333,11 @@ export default function App() {
                     </div>
 
                     {chatMessages.map((msg, index) => (
-                      <div key={index} className={`flex flex-col ${msg.sender === 'client' ? 'items-end' : 'items-start'} animate-fadeIn`}>
+                      <div key={index} className="flex flex-col">
                         <div className={`max-w-[85%] rounded-2xl p-3 text-xs leading-relaxed ${
                           msg.sender === 'client' 
-                            ? 'bg-[#E5A8A3] text-white rounded-tr-none shadow-sm' 
-                            : 'bg-white text-[#4A3F3B] rounded-tl-none shadow-xs border border-[#F0E6DC]'
+                            ? 'bg-[#E5A8A3] text-white rounded-tr-none shadow-sm ml-auto text-right' 
+                            : 'bg-white text-[#4A3F3B] rounded-tl-none shadow-xs border border-[#F0E6DC] mr-auto text-left'
                         }`}>
                           <p>{msg.text}</p>
                           
@@ -396,10 +383,9 @@ export default function App() {
                             </button>
                           </div>
                         )}
-                        <span className="text-[9px] text-[#9E8B83] mt-1 px-1">{msg.time}</span>
+                        <span className={`text-[9px] text-[#9E8B83] mt-1 px-1 ${msg.sender === 'client' ? 'text-right ml-auto' : 'text-left mr-auto'}`}>{msg.time}</span>
                       </div>
                     ))}
-                    <div ref={chatEndRef} />
                   </div>
                 </div>
 
@@ -415,7 +401,7 @@ export default function App() {
                   />
                   <button 
                     onClick={() => handleSendChatMessage(chatInput)}
-                    className="w-8 h-8 rounded-full bg-[#E5A8A3] flex items-center justify-center text-white hover:bg-[#DCA19C] transition-all shrink-0"
+                    className="w-8 h-8 rounded-full bg-[#E5A8A3] flex items-center justify-center text-white hover:bg-[#DCA19C] shrink-0"
                   >
                     <Send className="w-3.5 h-3.5" />
                   </button>
@@ -428,14 +414,14 @@ export default function App() {
 
         {/* ================= ABA: PLATAFORMA DE AGENDAMENTO (CLIENTE) ================= */}
         {activeTab === 'booking' && (
-          <div className="max-w-3xl mx-auto animate-fadeIn">
+          <div className="max-w-3xl mx-auto">
             <BookingWizard services={services} appointments={appointments} onComplete={handleCreateAppointment} />
           </div>
         )}
 
         {/* ================= ABA: PAINEL PROFISSIONAL (ADMIN) ================= */}
         {activeTab === 'admin' && (
-          <div className="max-w-4xl mx-auto space-y-6 animate-fadeIn">
+          <div className="max-w-4xl mx-auto space-y-6">
             
             {/* TELA DE LOGIN DE SEGURANÇA */}
             {!isAdminLoggedIn ? (
@@ -472,7 +458,7 @@ export default function App() {
                   </div>
 
                   {loginError && (
-                    <div className="text-left bg-rose-50 border border-rose-200 text-rose-700 px-3 py-2 rounded-xl text-xs flex items-center gap-1.5 animate-fadeIn">
+                    <div className="text-left bg-rose-50 border border-rose-200 text-rose-700 px-3 py-2 rounded-xl text-xs flex items-center gap-1.5">
                       <AlertCircle className="w-4 h-4 text-rose-500 shrink-0" />
                       <span>Senha incorreta. Acesso negado!</span>
                     </div>
@@ -480,7 +466,7 @@ export default function App() {
 
                   <button 
                     type="submit"
-                    className="w-full bg-[#E5A8A3] hover:bg-[#DCA19C] text-white py-2.5 rounded-xl text-xs font-bold uppercase tracking-wider transition-all shadow-xs"
+                    className="w-full bg-[#E5A8A3] hover:bg-[#DCA19C] text-white py-2.5 rounded-xl text-xs font-bold uppercase tracking-wider shadow-xs"
                   >
                     Entrar no Painel Seguro
                   </button>
@@ -570,7 +556,7 @@ export default function App() {
                         const zapMessage = "Olá " + appointment.clientName + "! \u2728 Aqui é a Brenda Heredia. Passando para confirmar o seu horário de " + appointment.serviceName + " no dia " + formattedDate + " às " + formattedTime + ". Está tudo de pé? \u0041\u006d\u006f\u0072 \u2764\ufe0f\ud83d\udc85";
 
                         return (
-                          <div key={appointment.id} className="p-6 hover:bg-[#FAF6F0]/30 transition-all flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
+                          <div key={appointment.id} className="p-6 hover:bg-[#FAF6F0]/30 flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
                             <div className="space-y-1">
                               <div className="flex items-center gap-2">
                                 <span className="text-sm font-bold text-[#4A3F3B]">{appointment.clientName}</span>
@@ -601,7 +587,7 @@ export default function App() {
                                 href={`https://wa.me/${appointment.clientPhone?.replace(/[^0-9]/g, '')}?text=${encodeURIComponent(zapMessage)}`}
                                 target="_blank"
                                 rel="noopener noreferrer"
-                                className="bg-[#FAF6F0] hover:bg-[#F2E5D9] text-[#B57C74] border border-[#E5A8A3] px-3 py-1.5 rounded-lg text-xs font-semibold flex items-center gap-1.5 transition-all"
+                                className="bg-[#FAF6F0] hover:bg-[#F2E5D9] text-[#B57C74] border border-[#E5A8A3] px-3 py-1.5 rounded-lg text-xs font-semibold flex items-center gap-1.5"
                               >
                                 <MessageSquare className="w-3.5 h-3.5" />
                                 Enviar Lembrete
@@ -610,7 +596,7 @@ export default function App() {
                               {appointment.status === 'Pendente' ? (
                                 <button 
                                   onClick={() => handleUpdateStatus(appointment.id, 'Confirmado')}
-                                  className="bg-emerald-50 hover:bg-emerald-100 text-emerald-700 border border-emerald-200 px-3 py-1.5 rounded-lg text-xs font-semibold flex items-center gap-1 transition-all"
+                                  className="bg-emerald-50 hover:bg-emerald-100 text-emerald-700 border border-emerald-200 px-3 py-1.5 rounded-lg text-xs font-semibold flex items-center gap-1"
                                 >
                                   <Check className="w-3.5 h-3.5" />
                                   Confirmar
@@ -623,7 +609,7 @@ export default function App() {
 
                               <button 
                                 onClick={() => handleDeleteAppointment(appointment.id)}
-                                className="p-1.5 text-[#A6948E] hover:text-rose-500 hover:bg-rose-50 rounded-lg transition-all"
+                                className="p-1.5 text-[#A6948E] hover:text-rose-500 hover:bg-rose-50 rounded-lg"
                               >
                                 <Trash2 className="w-4 h-4" />
                               </button>
@@ -1000,14 +986,14 @@ function BookingWizard({ services, appointments, onComplete }) {
                 </label>
                 
                 {selectedDate ? (
-                  <div className="grid grid-cols-2 gap-2 animate-fadeIn">
+                  <div className="grid grid-cols-2 gap-2">
                     {getAvailableTimeSlots(selectedDate).length > 0 ? (
                       getAvailableTimeSlots(selectedDate).map((slot) => (
                         <button
                           key={slot}
                           type="button"
                           onClick={() => setSelectedTime(slot)}
-                          className={`py-3 px-4 rounded-xl border text-center transition-all duration-200 font-medium text-xs ${
+                          className={`py-3 px-4 rounded-xl border text-center font-medium text-xs ${
                             selectedTime === slot
                               ? 'border-[#E5A8A3] bg-[#FCF8F5] text-[#B57C74] font-bold'
                               : 'border-[#F0E6DC] bg-white hover:border-[#E5A8A3]'
@@ -1036,7 +1022,7 @@ function BookingWizard({ services, appointments, onComplete }) {
             <div className="pt-6 border-t border-[#F0E6DC] flex justify-between">
               <button
                 onClick={handleBackStep}
-                className="px-4 py-2 text-xs font-semibold text-[#7D6B63] hover:text-[#4A3F3B] transition-all"
+                className="px-4 py-2 text-xs font-semibold text-[#7D6B63] hover:text-[#4A3F3B]"
               >
                 Voltar
               </button>
@@ -1044,9 +1030,9 @@ function BookingWizard({ services, appointments, onComplete }) {
               <button
                 disabled={!selectedDate || !selectedTime}
                 onClick={handleNextStep}
-                className={`px-6 py-2.5 rounded-xl text-xs font-bold uppercase tracking-wider transition-all duration-200 flex items-center gap-1.5 ${
+                className={`px-6 py-2.5 rounded-xl text-xs font-bold uppercase tracking-wider flex items-center gap-1.5 ${
                   selectedDate && selectedTime 
-                    ? 'bg-[#E5A8A3] text-white hover:bg-[#DCA19C] shadow-xs' 
+                    ? 'bg-[#E5A8A3] text-white hover:bg-[#DCA19C]' 
                     : 'bg-gray-100 text-gray-400 cursor-not-allowed'
                 }`}
               >
@@ -1103,7 +1089,7 @@ function BookingWizard({ services, appointments, onComplete }) {
                   <button
                     type="button"
                     onClick={() => setClientType('Novata')}
-                    className={`p-3 rounded-xl border text-center transition-all duration-200 text-xs font-semibold ${
+                    className={`p-3 rounded-xl border text-center text-xs font-semibold ${
                       clientType === 'Novata'
                         ? 'border-[#E5A8A3] bg-[#FCF8F5] text-[#B57C74]'
                         : 'border-[#F0E6DC] bg-white hover:border-[#E5A8A3]'
@@ -1114,7 +1100,7 @@ function BookingWizard({ services, appointments, onComplete }) {
                   <button
                     type="button"
                     onClick={() => setClientType('Veterana')}
-                    className={`p-3 rounded-xl border text-center transition-all duration-200 text-xs font-semibold ${
+                    className={`p-3 rounded-xl border text-center text-xs font-semibold ${
                       clientType === 'Veterana'
                         ? 'border-[#E5A8A3] bg-[#FCF8F5] text-[#B57C74]'
                         : 'border-[#F0E6DC] bg-white hover:border-[#E5A8A3]'
@@ -1164,14 +1150,14 @@ function BookingWizard({ services, appointments, onComplete }) {
               <button
                 type="button"
                 onClick={handleBackStep}
-                className="px-4 py-2 text-xs font-semibold text-[#7D6B63] hover:text-[#4A3F3B] transition-all"
+                className="px-4 py-2 text-xs font-semibold text-[#7D6B63] hover:text-[#4A3F3B]"
               >
                 Voltar
               </button>
               
               <button
                 type="submit"
-                className="bg-[#E5A8A3] hover:bg-[#DCA19C] text-white px-6 py-2.5 rounded-xl text-xs font-bold uppercase tracking-wider transition-all shadow-xs flex items-center gap-1.5"
+                className="bg-[#E5A8A3] hover:bg-[#DCA19C] text-white px-6 py-2.5 rounded-xl text-xs font-bold uppercase tracking-wider flex items-center gap-1.5"
               >
                 Efetuar Agendamento
                 <CheckCircle className="w-4 h-4" />
@@ -1188,4 +1174,12 @@ function BookingWizard({ services, appointments, onComplete }) {
             </div>
 
             <div className="space-y-2 max-w-md mx-auto">
-              <h3 className="text-2xl font-bold font-serif-elegant text-
+              <h3 className="text-2xl font-bold font-serif-elegant text-[#4A3F3B]">Agendado com Sucesso! 💅</h3>
+              <p className="text-xs text-[#7D6B63]">Muito obrigada, <strong>{clientName}</strong>. A sua vaga exclusiva está garantida para o dia <strong>{selectedDate?.split('-').reverse().join('/')}</strong> às <strong>{selectedTime}</strong>.</p>
+            </div>
+
+            <div className="bg-[#FAF6F0] p-4 rounded-xl border border-[#EBE0D5] text-xs max-sm mx-auto space-y-2">
+              <p className="text-[#7D6B63]">
+                <strong>O que acontece agora?</strong>
+                <br />
+                O robô registrou o seu agendamento na agenda. A Brenda confirmará diretamente com você por mensagem
