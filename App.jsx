@@ -179,8 +179,15 @@ export default function App() {
         botResponse.push({ sender: 'bot', text: 'Estamos localizadas em um espaço super acolhedor! 📍 Jardim Progresso, Rua Urias Ribeiro, nº 2551, Casa 21, Condomínio Espanha, próximo ao colégio Objetivo.', time: 'Agora' });
         botResponse.push({ sender: 'bot', text: 'Deseja fazer mais alguma consulta? Escolha uma das opções abaixo:', time: 'Agora', isOptions: true });
       } else if (isSystemOption && text === '4. Falar com Atendente') {
-        botResponse.push({ sender: 'bot', text: 'Entendido. Notifiquei a Brenda! Como este site é uma simulação demonstrativa, em um sistema real essa conversa seria transferida agora para o WhatsApp pessoal dela. Ela responderá você em instantes! 🌸', time: 'Agora' });
-        botResponse.push({ sender: 'bot', text: 'Se precisar de outra informação enquanto aguarda, escolha uma opção:', time: 'Agora', isOptions: true });
+        botResponse.push({ sender: 'bot', text: 'Entendido! 🌸 Estou te redirecionando agora mesmo para o WhatsApp pessoal da Brenda para que você tire suas dúvidas direto com ela.', time: 'Agora' });
+        botResponse.push({ sender: 'bot', text: 'Se a nova aba não abrir em instantes, você também pode clicar no botão de suporte abaixo:', time: 'Agora', showWhatsAppRedirect: true });
+        
+        // Redirecionamento Automático para o seu WhatsApp após 1.2 segundos
+        setTimeout(() => {
+          const personalZapUrl = `https://wa.me/5517991234567?text=${encodeURIComponent("Olá, Brenda! ✨ Estava usando o seu assistente virtual no site e gostaria de tirar uma dúvida com você sobre os serviços de unhas! ❤️")}`;
+          window.open(personalZapUrl, '_blank');
+        }, 1200);
+
       } else {
         botResponse.push({ sender: 'bot', text: 'Por favor, escolha uma das opções do menu para que eu possa ajudar da melhor forma. 💕', time: 'Agora', isOptions: true });
       }
@@ -360,6 +367,18 @@ export default function App() {
                               <CalendarIcon className="w-3.5 h-3.5" />
                               ABRIR AGENDA ONLINE
                             </button>
+                          )}
+
+                          {msg.showWhatsAppRedirect && (
+                            <a 
+                              href={`https://wa.me/5517991234567?text=${encodeURIComponent("Olá, Brenda! ✨ Estava usando o seu assistente virtual no site e gostaria de tirar uma dúvida com você sobre os serviços de unhas! ❤️")}`}
+                              target="_blank"
+                              rel="noopener noreferrer"
+                              className="mt-3 w-full bg-[#25D366] hover:bg-[#20ba59] text-white font-bold py-2 px-3 rounded-lg text-[11px] flex items-center justify-center gap-1.5 transition-all shadow-sm"
+                            >
+                              <MessageSquare className="w-3.5 h-3.5" />
+                              ABRIR CONVERSA NO WHATSAPP
+                            </a>
                           )}
                         </div>
 
@@ -1192,7 +1211,7 @@ function BookingWizard({ services, appointments, onComplete }) {
               </p>
             </div>
 
-            <div className="pt-6">
+            <div className="padding-6">
               <button
                 type="button"
                 onClick={resetForm}
