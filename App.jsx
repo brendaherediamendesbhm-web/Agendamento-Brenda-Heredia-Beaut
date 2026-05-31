@@ -75,15 +75,15 @@ export default function App() {
   const [showPassword, setShowPassword] = useState(false);
   const [loginError, setLoginError] = useState(false); 
 
-  // Lista de serviços oferecidos por Brenda Heredia Beauty
+  // Lista de serviços com os NOVOS VALORES ESTRATÉGICOS
   const services = [
-    { id: 'esmaltacao_gel', name: 'Esmaltação em Gel', category: 'Novos & Blindagem', duration: '1h30', price: 50, desc: 'Aplicação de esmalte em gel premium com secagem na cabine LED. Brilho duradouro por semanas sem descascar.' },
-    { id: 'banho_gel', name: 'Banho de Gel', category: 'Novos & Blindagem', duration: '2h45', price: 85, desc: 'Ideal para blindar e fortalecer o crescimento das unhas naturais com camada de gel premium.' },
-    { id: 'along_f1', name: 'Alongamento Molde F1', category: 'Novos & Blindagem', duration: '3h00', price: 100, desc: 'Extensão rápida e sofisticada utilizando a técnica moderna do Molde F1.' },
-    { id: 'manut_banho', name: 'Manutenção de Banho de Gel', category: 'Manutenções', duration: '2h15', price: 65, desc: 'Manutenção periódica para repor a estrutura do gel nas unhas em crescimento.' },
-    { id: 'manut_f1', name: 'Manutenção de Molde F1', category: 'Manutenções', duration: '2h30', price: 75, desc: 'Nivelamento e reposicionamento do alongamento feito na técnica F1.' },
-    { id: 'remocao', name: 'Remoção de Gel / Alongamento', category: 'Remoções e Extras', duration: '1h00', price: 25, desc: 'Retirada segura do produto sem danificar a base da unha natural.' },
-    { id: 'conserto', name: 'Conserto de Unha Avulsa', category: 'Remoções e Extras', duration: '0h30', price: 10, desc: 'Reparação de emergência para uma unha partida ou danificada.' }
+    { id: 'esmaltacao_gel', name: 'Esmaltação em Gel', category: 'Novos & Blindagem', duration: '1h30', price: 25, desc: 'Aplicação de esmalte em gel premium com secagem na cabine LED. Brilho duradouro por semanas sem descascar.' },
+    { id: 'banho_gel', name: 'Banho de Gel', category: 'Novos & Blindagem', duration: '2h45', price: 50, desc: 'Ideal para blindar e fortalecer o crescimento das unhas naturais com camada de gel premium.' },
+    { id: 'along_f1', name: 'Alongamento Molde F1', category: 'Novos & Blindagem', duration: '3h00', price: 80, desc: 'Extensão rápida e sofisticada utilizando a técnica moderna do Molde F1.' },
+    { id: 'manut_banho', name: 'Manutenção de Banho de Gel', category: 'Manutenções', duration: '2h15', price: 40, desc: 'Manutenção periódica para repor a estrutura do gel nas unhas em crescimento.' },
+    { id: 'manut_f1', name: 'Manutenção de Molde F1', category: 'Manutenções', duration: '2h30', price: 50, desc: 'Nivelamento e reposicionamento do alongamento feito na técnica F1.' },
+    { id: 'remocao', name: 'Remoção de Gel / Alongamento', category: 'Remoções e Extras', duration: '1h00', price: 15, desc: 'Retirada segura do produto sem danificar a base da unha natural.' },
+    { id: 'conserto', name: 'Conserto de Unha Avulsa', category: 'Remoções e Extras', duration: '0h30', price: 5, desc: 'Reparação de emergência para uma unha partida ou danificada.' }
   ];
 
   // --- LÓGICA DE ARMAZENAMENTO LOCAL ---
@@ -151,9 +151,8 @@ export default function App() {
     { sender: 'bot', text: 'Deseja agendar um serviço, consultar valores ou falar conosco? Selecione uma das opções abaixo:', time: 'Agora', isOptions: true }
   ]);
   const [chatInput, setChatInput] = useState('');
-  const chatContainerRef = useRef(null); // Ref direcionada para o container de mensagens interna
+  const chatContainerRef = useRef(null); 
 
-  // ROLAGEM INTERNA EXCLUSIVA DO CELULAR (PROIBIDO DE MEXER NO SITE GERAL)
   useEffect(() => {
     if (chatContainerRef.current) {
       chatContainerRef.current.scrollTop = chatContainerRef.current.scrollHeight;
@@ -178,9 +177,10 @@ export default function App() {
         botResponse.push({ sender: 'bot', text: 'Clique no link "ABRIR AGENDA ONLINE" no topo para selecionar o seu serviço de manutenção ou agendar a remoção segura.', time: 'Agora', showLinkTrigger: true });
       } else if (isSystemOption && text === '3. Ver Localização') {
         botResponse.push({ sender: 'bot', text: 'Estamos localizadas em um espaço super acolhedor! 📍 Jardim Progresso, Rua Urias Ribeiro, nº 2551, Casa 21, Condomínio Espanha, próximo ao colégio Objetivo.', time: 'Agora' });
-        botResponse.push({ sender: 'bot', text: 'Deseja fazer mais alguma consulta?', time: 'Agora', isOptions: true });
+        botResponse.push({ sender: 'bot', text: 'Deseja fazer mais alguma consulta? Escolha uma das opções abaixo:', time: 'Agora', isOptions: true });
       } else if (isSystemOption && text === '4. Falar com Atendente') {
-        botResponse.push({ sender: 'bot', text: 'Entendido. Vou encaminhar a sua mensagem para a nossa profissional. Ela responderá assim que terminar o atendimento em curso! 🌸', time: 'Agora' });
+        botResponse.push({ sender: 'bot', text: 'Entendido. Notifiquei a Brenda! Como este site é uma simulação demonstrativa, em um sistema real essa conversa seria transferida agora para o WhatsApp pessoal dela. Ela responderá você em instantes! 🌸', time: 'Agora' });
+        botResponse.push({ sender: 'bot', text: 'Se precisar de outra informação enquanto aguarda, escolha uma opção:', time: 'Agora', isOptions: true });
       } else {
         botResponse.push({ sender: 'bot', text: 'Por favor, escolha uma das opções do menu para que eu possa ajudar da melhor forma. 💕', time: 'Agora', isOptions: true });
       }
@@ -332,7 +332,7 @@ export default function App() {
                   </div>
                 </div>
 
-                {/* Corpo das Mensagens do Chat (REF ADICIONADA PARA ROLAR APENAS ESSA ÁREA) */}
+                {/* Corpo das Mensagens do Chat */}
                 <div 
                   ref={chatContainerRef}
                   className="flex-1 bg-[#FAF6F0] p-4 overflow-y-auto space-y-3 flex flex-col justify-between" 
@@ -1079,138 +1079,4 @@ function BookingWizard({ services, appointments, onComplete }) {
                 />
               </div>
 
-              <div className="space-y-1.5">
-                <label className="text-[10px] font-bold text-[#9E8B83] uppercase tracking-wider flex items-center gap-1">
-                  <Smartphone className="w-3.5 h-3.5 text-[#B57C74]" /> Celular (WhatsApp)
-                </label>
-                <input 
-                  type="tel"
-                  required
-                  placeholder="Ex: (17) 99123-4567"
-                  value={clientPhone}
-                  onChange={(e) => setClientPhone(e.target.value)}
-                  className="w-full bg-white text-xs px-3.5 py-3 rounded-xl border border-[#F0E6DC] focus:outline-none focus:ring-1 focus:ring-[#E5A8A3]"
-                />
-              </div>
-
-              <div className="space-y-1.5 md:col-span-2">
-                <label className="text-[10px] font-bold text-[#9E8B83] uppercase tracking-wider">
-                  Já é nossa cliente de Alongamento?
-                </label>
-                <div className="grid grid-cols-2 gap-3">
-                  <button
-                    type="button"
-                    onClick={() => setClientType('Novata')}
-                    className={`p-3 rounded-xl border text-center text-xs font-semibold ${
-                      clientType === 'Novata'
-                        ? 'border-[#E5A8A3] bg-[#FCF8F5] text-[#B57C74]'
-                        : 'border-[#F0E6DC] bg-white hover:border-[#E5A8A3]'
-                    }`}
-                  >
-                    🌸 Não, primeira vez (Novata)
-                  </button>
-                  <button
-                    type="button"
-                    onClick={() => setClientType('Veterana')}
-                    className={`p-3 rounded-xl border text-center text-xs font-semibold ${
-                      clientType === 'Veterana'
-                        ? 'border-[#E5A8A3] bg-[#FCF8F5] text-[#B57C74]'
-                        : 'border-[#F0E6DC] bg-white hover:border-[#E5A8A3]'
-                    }`}
-                  >
-                    👑 Sim, sou cliente (Veterana)
-                  </button>
-                </div>
-              </div>
-
-              <div className="space-y-1.5 md:col-span-2">
-                <label className="text-[10px] font-bold text-[#9E8B83] uppercase tracking-wider">
-                  Observações / Preferência de Decoração (Opcional)
-                </label>
-                <textarea 
-                  rows="2"
-                  placeholder="Diga se quer alguma cor específica, unha decorada, ou se tem alguma unha quebrada."
-                  value={notes}
-                  onChange={(e) => setNotes(e.target.value)}
-                  className="w-full bg-white text-xs p-3 rounded-xl border border-[#F0E6DC] focus:outline-none focus:ring-1 focus:ring-[#E5A8A3]"
-                />
-              </div>
-
-            </div>
-
-            <div className="bg-[#FAF6F0] p-4 rounded-xl border border-[#EBE0D5] text-xs space-y-2">
-              <h4 className="font-bold text-[#4A3F3B] border-b border-[#EBE0D5] pb-1.5 mb-1.5 uppercase tracking-widest text-[9px] text-[#B57C74]">Resumo do Agendamento</h4>
-              <div className="flex justify-between">
-                <span className="text-[#7D6B63]">Serviço de Unhas:</span>
-                <span className="font-bold text-[#4A3F3B]">{selectedService?.name}</span>
-              </div>
-              <div className="flex justify-between">
-                <span className="text-[#7D6B63]">Duração Estimada:</span>
-                <span className="font-semibold text-[#4A3F3B]">{selectedService?.duration}</span>
-              </div>
-              <div className="flex justify-between">
-                <span className="text-[#7D6B63]">Data / Hora Reservada:</span>
-                <span className="font-bold text-[#4A3F3B]">{selectedDate?.split('-').reverse().join('/')} às {selectedTime}</span>
-              </div>
-              <div className="flex justify-between border-t border-[#EBE0D5] pt-1.5 mt-1.5 font-bold">
-                <span className="text-[#8C6D62]">Total Previsto:</span>
-                <span className="text-sm text-[#B57C74]">R$ {selectedService?.price},00</span>
-              </div>
-            </div>
-
-            <div className="pt-4 border-t border-[#F0E6DC] flex justify-between">
-              <button
-                type="button"
-                onClick={handleBackStep}
-                className="px-4 py-2 text-xs font-semibold text-[#7D6B63] hover:text-[#4A3F3B]"
-              >
-                Voltar
-              </button>
-              
-              <button
-                type="submit"
-                className="bg-[#E5A8A3] hover:bg-[#DCA19C] text-white px-6 py-2.5 rounded-xl text-xs font-bold uppercase tracking-wider flex items-center gap-1.5"
-              >
-                Efetuar Agendamento
-                <CheckCircle className="w-4 h-4" />
-              </button>
-            </div>
-          </form>
-        )}
-
-        {/* ================= PASSO 4: SUCESSO DO AGENDAMENTO ================= */}
-        {step === 4 && (
-          <div className="py-8 text-center space-y-6">
-            <div className="w-16 h-16 bg-[#F7E6E3] rounded-full flex items-center justify-center mx-auto text-[#B57C74] animate-bounce">
-              <Check className="w-8 h-8" />
-            </div>
-
-            <div className="space-y-2 max-w-md mx-auto">
-              <h3 className="text-2xl font-bold font-serif-elegant text-[#4A3F3B]">Agendado com Sucesso! 💅</h3>
-              <p className="text-xs text-[#7D6B63]">Muito obrigada, <strong>{clientName}</strong>. A sua vaga exclusiva está garantida para o dia <strong>{selectedDate?.split('-').reverse().join('/')}</strong> às <strong>{selectedTime}</strong>.</p>
-            </div>
-
-            <div className="bg-[#FAF6F0] p-4 rounded-xl border border-[#EBE0D5] text-xs max-sm mx-auto space-y-2">
-              <p className="text-[#7D6B63]">
-                <strong>O que acontece agora?</strong>
-                <br />
-                O robô registrou o seu agendamento na agenda. A Brenda confirmará diretamente com você por mensagem de WhatsApp.
-              </p>
-            </div>
-
-            <div className="pt-6">
-              <button
-                type="button"
-                onClick={resetForm}
-                className="bg-white hover:bg-[#FAF6F0] text-[#B57C74] border border-[#E5A8A3] px-6 py-2.5 rounded-xl text-xs font-bold uppercase tracking-wider"
-              >
-                Fazer Novo Agendamento
-              </button>
-            </div>
-          </div>
-        )}
-
-      </div>
-    </div>
-  );
-}
+              <div className="space-y-1.5
