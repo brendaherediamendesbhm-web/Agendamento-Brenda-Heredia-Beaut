@@ -75,7 +75,7 @@ export default function App() {
   const [showPassword, setShowPassword] = useState(false);
   const [loginError, setLoginError] = useState(false); 
 
-  // Lista de serviços com os NOVOS VALORES ESTRATÉGICOS
+  // Lista de serviços oferecidos com os valores promocionais
   const services = [
     { id: 'esmaltacao_gel', name: 'Esmaltação em Gel', category: 'Novos & Blindagem', duration: '1h30', price: 25, desc: 'Aplicação de esmalte em gel premium com secagem na cabine LED. Brilho duradouro por semanas sem descascar.' },
     { id: 'banho_gel', name: 'Banho de Gel', category: 'Novos & Blindagem', duration: '2h45', price: 50, desc: 'Ideal para blindar e fortalecer o crescimento das unhas naturais com camada de gel premium.' },
@@ -136,7 +136,7 @@ export default function App() {
       return app;
     });
     saveAppointmentsState(updated);
-    showToast(`Agendamento atualizado para ${newStatus}!`, "success");
+    showToast(`Agendamento updated para ${newStatus}!`, "success");
   };
 
   const handleDeleteAppointment = async (id) => {
@@ -1079,4 +1079,22 @@ function BookingWizard({ services, appointments, onComplete }) {
                 />
               </div>
 
-              <div className="space-y-1.5
+              <div className="space-y-1.5">
+                <label className="text-[10px] font-bold text-[#9E8B83] uppercase tracking-wider flex items-center gap-1">
+                  <Smartphone className="w-3.5 h-3.5 text-[#B57C74]" /> Celular (WhatsApp)
+                </label>
+                <input 
+                  type="tel"
+                  required
+                  placeholder="Ex: (17) 99123-4567"
+                  value={clientPhone}
+                  onChange={(e) => setClientPhone(e.target.value)}
+                  className="w-full bg-white text-xs px-3.5 py-3 rounded-xl border border-[#F0E6DC] focus:outline-none focus:ring-1 focus:ring-[#E5A8A3]"
+                />
+              </div>
+
+              <div className="space-y-1.5 md:col-span-2">
+                <label className="text-[10px] font-bold text-[#9E8B83] uppercase tracking-wider">
+                  Já é nossa cliente de Alongamento?
+                </label>
+                <div className="grid grid-cols-
