@@ -636,7 +636,7 @@ export default function App() {
         <div className="max-w-6xl mx-auto flex flex-col md:flex-row justify-between items-center gap-4 text-xs text-[#9E8B83]">
           <p>© 2026 Brenda Heredia Beauty. Todos os direitos reservados.</p>
           <div className="flex gap-4">
-            <span>Sistema Inteligente de Automação e Agendamento</span>
+            <span>Sistema Intelligent de Automação e Agendamento</span>
           </div>
         </div>
       </footer>
@@ -1078,4 +1078,133 @@ function BookingWizard({ services, appointments, onComplete }) {
                 <label className="text-[10px] font-bold text-[#9E8B83] uppercase tracking-wider flex items-center gap-1">
                   <Smartphone className="w-3.5 h-3.5 text-[#B57C74]" /> Celular (WhatsApp)
                 </label>
-                <input
+                <input 
+                  type="tel"
+                  required
+                  placeholder="Ex: (17) 99123-4567"
+                  value={clientPhone}
+                  onChange={(e) => setClientPhone(e.target.value)}
+                  className="w-full bg-white text-xs px-3.5 py-3 rounded-xl border border-[#F0E6DC] focus:outline-none focus:ring-1 focus:ring-[#E5A8A3]"
+                />
+              </div>
+
+              <div className="space-y-1.5 md:col-span-2">
+                <label className="text-[10px] font-bold text-[#9E8B83] uppercase tracking-wider">
+                  Já é nossa cliente de Alongamento?
+                </label>
+                <div className="grid grid-cols-2 gap-3">
+                  <button
+                    type="button"
+                    onClick={() => setClientType('Novata')}
+                    className={`p-3 rounded-xl border text-center text-xs font-semibold ${
+                      clientType === 'Novata'
+                        ? 'border-[#E5A8A3] bg-[#FCF8F5] text-[#B57C74]'
+                        : 'border-[#F0E6DC] bg-white hover:border-[#E5A8A3]'
+                    }`}
+                  >
+                    🌸 Não, primeira vez (Novata)
+                  </button>
+                  <button
+                    type="button"
+                    onClick={() => setClientType('Veterana')}
+                    className={`p-3 rounded-xl border text-center text-xs font-semibold ${
+                      clientType === 'Veterana'
+                        ? 'border-[#E5A8A3] bg-[#FCF8F5] text-[#B57C74]'
+                        : 'border-[#F0E6DC] bg-white hover:border-[#E5A8A3]'
+                    }`}
+                  >
+                    👑 Sim, sou cliente (Veterana)
+                  </button>
+                </div>
+              </div>
+
+              <div className="space-y-1.5 md:col-span-2">
+                <label className="text-[10px] font-bold text-[#9E8B83] uppercase tracking-wider">
+                  Observações / Preferência de Decoração (Opcional)
+                </label>
+                <textarea 
+                  rows="2"
+                  placeholder="Diga se quer alguma cor específica, unha decorada, ou se tem alguma unha quebrada."
+                  value={notes}
+                  onChange={(e) => setNotes(e.target.value)}
+                  className="w-full bg-white text-xs p-3 rounded-xl border border-[#F0E6DC] focus:outline-none focus:ring-1 focus:ring-[#E5A8A3]"
+                />
+              </div>
+
+            </div>
+
+            <div className="bg-[#FAF6F0] p-4 rounded-xl border border-[#EBE0D5] text-xs space-y-2">
+              <h4 className="font-bold text-[#4A3F3B] border-b border-[#EBE0D5] pb-1.5 mb-1.5 uppercase tracking-widest text-[9px] text-[#B57C74]">Resumo do Agendamento</h4>
+              <div className="flex justify-between">
+                <span className="text-[#7D6B63]">Serviço de Unhas:</span>
+                <span className="font-bold text-[#4A3F3B]">{selectedService?.name}</span>
+              </div>
+              <div className="flex justify-between">
+                <span className="text-[#7D6B63]">Duração Estimada:</span>
+                <span className="font-semibold text-[#4A3F3B]">{selectedService?.duration}</span>
+              </div>
+              <div className="flex justify-between">
+                <span className="text-[#7D6B63]">Data / Hora Reservada:</span>
+                <span className="font-bold text-[#4A3F3B]">{selectedDate?.split('-').reverse().join('/')} às {selectedTime}</span>
+              </div>
+              <div className="flex justify-between border-t border-[#EBE0D5] pt-1.5 mt-1.5 font-bold">
+                <span className="text-[#8C6D62]">Total Previsto:</span>
+                <span className="text-sm text-[#B57C74]">R$ {selectedService?.price},00</span>
+              </div>
+            </div>
+
+            <div className="pt-4 border-t border-[#F0E6DC] flex justify-between">
+              <button
+                type="button"
+                onClick={handleBackStep}
+                className="px-4 py-2 text-xs font-semibold text-[#7D6B63] hover:text-[#4A3F3B]"
+              >
+                Voltar
+              </button>
+              
+              <button
+                type="submit"
+                className="bg-[#E5A8A3] hover:bg-[#DCA19C] text-white px-6 py-2.5 rounded-xl text-xs font-bold uppercase tracking-wider flex items-center gap-1.5"
+              >
+                Efetuar Agendamento
+                <CheckCircle className="w-4 h-4" />
+              </button>
+            </div>
+          </form>
+        )}
+
+        {step === 4 && (
+          <div className="py-8 text-center space-y-6">
+            <div className="w-16 h-16 bg-[#F7E6E3] rounded-full flex items-center justify-center mx-auto text-[#B57C74] animate-bounce">
+              <Check className="w-8 h-8" />
+            </div>
+
+            <div className="space-y-2 max-w-md mx-auto">
+              <h3 className="text-2xl font-bold font-serif-elegant text-[#4A3F3B]">Agendado com Sucesso! 💅</h3>
+              <p className="text-xs text-[#7D6B63]">Muito obrigada, <strong>{clientName}</strong>. A sua vaga exclusiva está garantida para o dia <strong>{selectedDate?.split('-').reverse().join('/')}</strong> às <strong>{selectedTime}</strong>.</p>
+            </div>
+
+            <div className="bg-[#FAF6F0] p-4 rounded-xl border border-[#EBE0D5] text-xs max-sm mx-auto space-y-2">
+              <p className="text-[#7D6B63]">
+                <strong>O que acontece agora?</strong>
+                <br />
+                O robô registrou o seu agendamento na agenda. A Brenda confirmará diretamente com você por mensagem de WhatsApp.
+              </p>
+            </div>
+
+            <div className="pt-6">
+              <button
+                type="button"
+                onClick={resetForm}
+                className="bg-white hover:bg-[#FAF6F0] text-[#B57C74] border border-[#E5A8A3] px-6 py-2.5 rounded-xl text-xs font-bold uppercase tracking-wider"
+              >
+                Fazer Novo Agendamento
+              </button>
+            </div>
+          </div>
+        )}
+
+      </div>
+    </div>
+  );
+}
