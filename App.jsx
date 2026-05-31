@@ -743,7 +743,7 @@ function BookingWizard({ services, appointments, onComplete }) {
       const slotStart = timeToMins(slotTime);
       const slotEnd = slotStart + currentDuration;
 
-      // BLOQUEIO DINÂMICO DE HORÁRIOS QUE JÁ PASSARAM NO DIA DE HOJE (PARÊNTESE CORRIGIDO AQUI)
+      // BLOQUEIO DINÂMICO DE HORÁRIOS QUE JÁ PASSARAM NO DIA DE HOJE
       if (dateStr === todayStr) {
         if (slotStart <= currentMins) return false;
       }
@@ -1061,4 +1061,21 @@ function BookingWizard({ services, appointments, onComplete }) {
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               
               <div className="space-y-1.5">
-                <label className="text-[10px] font-bold text-[#9E8B83] uppercase tracking-wider flex items-center gap
+                <label className="text-[10px] font-bold text-[#9E8B83] uppercase tracking-wider flex items-center gap-1">
+                  <User className="w-3.5 h-3.5 text-[#B57C74]" /> Nome Completo
+                </label>
+                <input 
+                  type="text"
+                  required
+                  placeholder="Ex: Ana Souza"
+                  value={clientName}
+                  onChange={(e) => setClientName(e.target.value)}
+                  className="w-full bg-white text-xs px-3.5 py-3 rounded-xl border border-[#F0E6DC] focus:outline-none focus:ring-1 focus:ring-[#E5A8A3]"
+                />
+              </div>
+
+              <div className="space-y-1.5">
+                <label className="text-[10px] font-bold text-[#9E8B83] uppercase tracking-wider flex items-center gap-1">
+                  <Smartphone className="w-3.5 h-3.5 text-[#B57C74]" /> Celular (WhatsApp)
+                </label>
+                <input
