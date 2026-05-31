@@ -21,7 +21,6 @@ import {
   ChevronLeft
 } from 'lucide-react';
 
-// --- FONTES & ESTILOS GLOBAIS ---
 const injectStyles = () => {
   if (typeof document !== 'undefined') {
     const id = 'dotto-google-fonts';
@@ -63,19 +62,16 @@ export default function App() {
     injectStyles();
   }, []);
 
-  // --- ESTADOS GLOBAIS ---
   const [activeTab, setActiveTab] = useState('simulator'); 
   const [appointments, setAppointments] = useState([]);
   const [toastMessage, setToastMessage] = useState(null);
   const [toastType, setToastType] = useState('success'); 
 
-  // Controle de segurança para o painel admin
   const [isAdminLoggedIn, setIsAdminLoggedIn] = useState(false);
   const [adminPassword, setAdminPassword] = useState('');
   const [showPassword, setShowPassword] = useState(false);
   const [loginError, setLoginError] = useState(false); 
 
-  // Lista de serviços oferecidos com os valores promocionais mínimos
   const services = [
     { id: 'esmaltacao_gel', name: 'Esmaltação em Gel', category: 'Novos & Blindagem', duration: '1h30', price: 25, desc: 'Aplicação de esmalte em gel premium com secagem na cabine LED. Brilho duradouro por semanas sem descascar.' },
     { id: 'banho_gel', name: 'Banho de Gel', category: 'Novos & Blindagem', duration: '2h45', price: 50, desc: 'Ideal para blindar e fortalecer o crescimento das unhas naturais com camada de gel premium.' },
@@ -86,12 +82,7 @@ export default function App() {
     { id: 'conserto', name: 'Conserto de Unha Avulsa', category: 'Remoções e Extras', duration: '0h30', price: 5, desc: 'Reparação de emergência para uma unha partida ou danificada.' }
   ];
 
-  // --- LÓGICA DE ARMAZENAMENTO LOCAL ---
   useEffect(() => {
-    loadLocalData();
-  }, []);
-
-  const loadLocalData = () => {
     const saved = localStorage.getItem('dotto_appointments');
     if (saved) {
       try {
@@ -99,10 +90,8 @@ export default function App() {
       } catch (e) {
         setAppointments([]);
       }
-    } else {
-      setAppointments([]); 
     }
-  };
+  }, []);
 
   const saveAppointmentsState = (newList) => {
     setAppointments(newList);
@@ -145,7 +134,6 @@ export default function App() {
     showToast("Agendamento removido.", "info");
   };
 
-  // --- CONTROLE DO SIMULADOR ---
   const [chatMessages, setChatMessages] = useState([
     { sender: 'bot', text: 'Olá! ✨ Seja muito bem-vinda ao espaço Brenda Heredia Beauty. Sou a sua assistente virtual.', time: 'Agora' },
     { sender: 'bot', text: 'Deseja agendar um serviço, consultar valores ou falar conosco? Selecione uma das opções abaixo:', time: 'Agora', isOptions: true }
@@ -204,7 +192,6 @@ export default function App() {
   return (
     <div className="min-h-screen bg-[#FAF6F0] text-[#4A3F3B] flex flex-col antialiased">
       
-      {/* --- BANNER DE INFORMAÇÃO / ALERTA DE TOAST --- */}
       {toastMessage && (
         <div className="fixed top-5 left-1/2 transform -translate-x-1/2 z-50 flex items-center gap-3 px-4 py-3 rounded-full shadow-lg bg-white border border-[#E5A8A3]">
           {toastType === 'success' && <CheckCircle className="w-5 h-5 text-emerald-500" />}
@@ -214,7 +201,6 @@ export default function App() {
         </div>
       )}
 
-      {/* --- HEADER E NAVEGAÇÃO SUPERIOR --- */}
       <header className="bg-white border-b border-[#F0E6DC] py-4 px-6 sticky top-0 z-50 shadow-sm">
         <div className="max-w-6xl mx-auto flex flex-col md:flex-row justify-between items-center gap-4">
           <div className="text-center md:text-left">
@@ -227,21 +213,21 @@ export default function App() {
           <nav className="flex bg-[#FAF6F0] p-1 rounded-full border border-[#EBE0D5] w-full md:w-auto overflow-x-auto">
             <button 
               onClick={() => setActiveTab('simulator')}
-              className={`flex items-center gap-2 px-4 py-2 rounded-full text-xs font-semibold whitespace-nowrap ${activeTab === 'simulator' ? 'bg-[#E5A8A3] text-white shadow-sm' : 'text-[#7D6B63] hover:text-[#4A3F3B]'}`}
+              className={`flex items-center gap-2 px-4 py-2 rounded-full text-xs font-semibold whitespace-nowrap ${activeTab === 'simulator' ? 'bg-[#E5A8A3] text-white shadow-sm' : 'text-[#7D6B63]'}`}
             >
               <Smartphone className="w-4 h-4" />
               Simulador WhatsApp Bot
             </button>
             <button 
               onClick={() => setActiveTab('booking')}
-              className={`flex items-center gap-2 px-4 py-2 rounded-full text-xs font-semibold whitespace-nowrap ${activeTab === 'booking' ? 'bg-[#E5A8A3] text-white shadow-sm' : 'text-[#7D6B63] hover:text-[#4A3F3B]'}`}
+              className={`flex items-center gap-2 px-4 py-2 rounded-full text-xs font-semibold whitespace-nowrap ${activeTab === 'booking' ? 'bg-[#E5A8A3] text-white shadow-sm' : 'text-[#7D6B63]'}`}
             >
               <CalendarIcon className="w-4 h-4" />
               Agenda Online (Cliente)
             </button>
             <button 
               onClick={() => setActiveTab('admin')}
-              className={`flex items-center gap-2 px-4 py-2 rounded-full text-xs font-semibold transition-all duration-200 whitespace-nowrap ${activeTab === 'admin' ? 'bg-[#E5A8A3] text-white shadow-sm' : 'text-[#7D6B63] hover:text-[#4A3F3B]'}`}
+              className={`flex items-center gap-2 px-4 py-2 rounded-full text-xs font-semibold transition-all duration-200 whitespace-nowrap ${activeTab === 'admin' ? 'bg-[#E5A8A3] text-white shadow-sm' : 'text-[#7D6B63]'}`}
             >
               <Lock className="w-3.5 h-3.5" />
               Painel Profissional (Admin)
@@ -250,14 +236,11 @@ export default function App() {
         </div>
       </header>
 
-      {/* --- CONTEÚDO PRINCIPAL --- */}
       <main className="flex-1 max-w-6xl w-full mx-auto p-4 md:p-6">
         
-        {/* ================= ABA: SIMULADOR DE BOT (WHATSAPP) ================= */}
         {activeTab === 'simulator' && (
           <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-start">
             
-            {/* Esquerda: GUIA DE ATENDIMENTO PARA A CLIENTE */}
             <div className="lg:col-span-5 space-y-6">
               <div className="bg-white p-6 rounded-2xl border border-[#F0E6DC] shadow-sm">
                 <span className="text-[10px] uppercase tracking-widest font-bold text-[#B57C74] bg-[#F7E6E3] px-2 py-1 rounded">Agendamento Fácil</span>
@@ -281,13 +264,6 @@ export default function App() {
                       <p className="text-xs text-[#7D6B63] mt-0.5">Clique no botão "ABRIR AGENDA ONLINE" enviado pela assistente ou navegue pelas abas superiores.</p>
                     </div>
                   </div>
-                  <div className="flex gap-3">
-                    <div className="w-8 h-8 rounded-full bg-[#FAF6F0] flex items-center justify-center text-xs font-bold text-[#B57C74] shrink-0 border border-[#F0E6DC]">3</div>
-                    <div>
-                      <h4 className="text-xs font-bold text-[#4A3F3B]">Confirme e Relaxe</h4>
-                      <p className="text-xs text-[#7D6B63] mt-0.5">Escolha o melhor dia e horário na grade mensal e preencha seus dados de contato. Seu horário exclusivo estará salvo!</p>
-                    </div>
-                  </div>
                 </div>
 
                 <div className="mt-8 pt-6 border-t border-[#F0E6DC] text-center">
@@ -309,16 +285,13 @@ export default function App() {
               </div>
             </div>
 
-            {/* Direita: Mockup do Celular */}
             <div className="lg:col-span-7 flex justify-center">
               <div className="w-full max-w-[380px] bg-white rounded-[40px] border-[10px] border-[#4A3F3B] shadow-2xl overflow-hidden flex flex-col h-[640px] relative">
                 
-                {/* Detalhe do Celular */}
                 <div className="absolute top-0 left-1/2 transform -translate-x-1/2 h-5 w-36 bg-[#4A3F3B] rounded-b-2xl z-10 flex items-center justify-center">
                   <div className="w-12 h-1 bg-gray-600 rounded-full"></div>
                 </div>
 
-                {/* Cabeçalho do WhatsApp */}
                 <div className="bg-[#FAF6F0] border-b border-[#F0E6DC] pt-8 pb-3 px-4 flex items-center gap-3">
                   <div className="w-9 h-9 rounded-full bg-[#E5A8A3] flex items-center justify-center text-white font-bold relative shrink-0">
                     B
@@ -332,7 +305,6 @@ export default function App() {
                   </div>
                 </div>
 
-                {/* Corpo das Mensagens do Chat */}
                 <div 
                   ref={chatContainerRef}
                   className="flex-1 bg-[#FAF6F0] p-4 overflow-y-auto space-y-3 flex flex-col justify-between" 
@@ -354,10 +326,7 @@ export default function App() {
                           
                           {msg.showLinkTrigger && (
                             <button 
-                              onClick={() => {
-                                showToast("Carregando a agenda...", "info");
-                                setActiveTab('booking');
-                              }}
+                              onClick={() => setActiveTab('booking')}
                               className="mt-3 w-full bg-[#FAF6F0] border border-[#E5A8A3] hover:bg-white text-[#B57C74] font-bold py-2 px-3 rounded-lg text-[11px] flex items-center justify-center gap-1.5 transition-all shadow-xs"
                             >
                               <CalendarIcon className="w-3.5 h-3.5" />
@@ -400,7 +369,6 @@ export default function App() {
                   </div>
                 </div>
 
-                {/* Rodapé de Mensagem */}
                 <div className="bg-white p-3 border-t border-[#F0E6DC] flex gap-2 items-center">
                   <input 
                     type="text" 
@@ -408,7 +376,7 @@ export default function App() {
                     onChange={(e) => setChatInput(e.target.value)}
                     placeholder="Escreva uma mensagem..."
                     onKeyDown={(e) => e.key === 'Enter' && handleSendChatMessage(chatInput)}
-                    className="flex-1 bg-[#FAF6F0] text-xs px-3 py-2 rounded-full border border-[#EBE0D5] focus:outline-none focus:ring-1 focus:ring-[#E5A8A3]"
+                    className="flex-1 bg-[#FAF6F0] text-xs px-3 py-2 rounded-full border border-[#EBE0D5] focus:outline-none"
                   />
                   <button 
                     onClick={() => handleSendChatMessage(chatInput)}
@@ -423,18 +391,15 @@ export default function App() {
           </div>
         )}
 
-        {/* ================= ABA: PLATAFORMA DE AGENDAMENTO (CLIENTE) ================= */}
         {activeTab === 'booking' && (
           <div className="max-w-3xl mx-auto">
             <BookingWizard services={services} appointments={appointments} onComplete={handleCreateAppointment} />
           </div>
         )}
 
-        {/* ================= ABA: PAINEL PROFISSIONAL (ADMIN) ================= */}
         {activeTab === 'admin' && (
           <div className="max-w-4xl mx-auto space-y-6">
             
-            {/* TELA DE LOGIN DE SEGURANÇA */}
             {!isAdminLoggedIn ? (
               <div className="bg-white p-8 rounded-2xl border border-[#F0E6DC] shadow-sm max-w-md mx-auto text-center space-y-6 mt-12">
                 <div className="w-12 h-12 bg-[#F7E6E3] rounded-full flex items-center justify-center mx-auto text-[#B57C74]">
@@ -484,7 +449,6 @@ export default function App() {
                 </form>
               </div>
             ) : (
-              /* CONTEÚDO LIBERADO DO PAINEL ADMIN */
               <div className="space-y-6">
                 <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4 bg-white p-6 rounded-2xl border border-[#F0E6DC] shadow-xs">
                   <div>
@@ -504,7 +468,6 @@ export default function App() {
                   </button>
                 </div>
 
-                {/* Grid de Estatísticas Rápidas */}
                 <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
                   <div className="bg-white p-4 rounded-xl border border-[#F0E6DC] flex items-center justify-between shadow-xs">
                     <div>
@@ -541,7 +504,6 @@ export default function App() {
                   </div>
                 </div>
 
-                {/* Listagem de Horários */}
                 <div className="bg-white rounded-2xl border border-[#F0E6DC] shadow-xs overflow-hidden">
                   <div className="px-6 py-4 border-b border-[#F0E6DC] flex justify-between items-center bg-[#FAF6F0]/50">
                     <h4 className="text-xs font-bold text-[#4A3F3B] uppercase tracking-wider">Próximos Atendimentos</h4>
@@ -639,7 +601,6 @@ export default function App() {
 
       </main>
 
-      {/* --- RODAPÉ INSTITUCIONAL --- */}
       <footer className="bg-white border-t border-[#F0E6DC] py-6 px-4 mt-12">
         <div className="max-w-6xl mx-auto flex flex-col md:flex-row justify-between items-center gap-4 text-xs text-[#9E8B83]">
           <p>© 2026 Brenda Heredia Beauty. Todos os direitos reservados.</p>
@@ -653,7 +614,6 @@ export default function App() {
   );
 }
 
-// ================= COMPONENTE DE PROCESSO: AGENDAMENTO ONLINE (WIZARD) =================
 function BookingWizard({ services, appointments, onComplete }) {
   const [step, setStep] = useState(1); 
   const [selectedService, setSelectedService] = useState(null);
@@ -664,7 +624,6 @@ function BookingWizard({ services, appointments, onComplete }) {
   const [clientType, setClientType] = useState('Novata'); 
   const [notes, setNotes] = useState('');
 
-  // Estados de navegação do calendário mensal completo (Maio 2026)
   const todayDate = new Date(2026, 4, 27); 
   const [viewDate, setViewDate] = useState(new Date(2026, 4, 1)); 
 
@@ -843,7 +802,6 @@ function BookingWizard({ services, appointments, onComplete }) {
 
       <div className="p-6 md:p-8">
         
-        {/* ================= PASSO 1: ESCOLHA DO SERVIÇO ================= */}
         {step === 1 && (
           <div className="space-y-6">
             <div className="text-center max-w-md mx-auto">
@@ -906,7 +864,6 @@ function BookingWizard({ services, appointments, onComplete }) {
           </div>
         )}
 
-        {/* ================= PASSO 2: ESCOLHA DE DATA E HORA ================= */}
         {step === 2 && (
           <div className="space-y-6">
             <div className="text-center max-w-md mx-auto">
@@ -917,7 +874,6 @@ function BookingWizard({ services, appointments, onComplete }) {
 
             <div className="grid grid-cols-1 md:grid-cols-2 gap-8 pt-2">
               
-              {/* Calendário Mensal em Grade Completa */}
               <div className="space-y-4">
                 <div className="flex items-center justify-between">
                   <label className="text-[10px] font-bold text-[#9E8B83] uppercase tracking-wider flex items-center gap-1">
@@ -992,7 +948,6 @@ function BookingWizard({ services, appointments, onComplete }) {
                 </div>
               </div>
 
-              {/* Slots de Horários Disponíveis */}
               <div className="space-y-4">
                 <label className="text-[10px] font-bold text-[#9E8B83] uppercase tracking-wider flex items-center gap-1">
                   <Clock className="w-3.5 h-3.5 text-[#B57C74]" /> Horários Livres
@@ -1055,7 +1010,6 @@ function BookingWizard({ services, appointments, onComplete }) {
           </div>
         )}
 
-        {/* ================= PASSO 3: DADOS DE CONTATO E CONFIRMAÇÃO ================= */}
         {step === 3 && (
           <form onSubmit={handleSubmit} className="space-y-6">
             <div className="text-center max-w-md mx-auto">
@@ -1083,4 +1037,133 @@ function BookingWizard({ services, appointments, onComplete }) {
                 <label className="text-[10px] font-bold text-[#9E8B83] uppercase tracking-wider flex items-center gap-1">
                   <Smartphone className="w-3.5 h-3.5 text-[#B57C74]" /> Celular (WhatsApp)
                 </label>
-                
+                <input 
+                  type="tel"
+                  required
+                  placeholder="Ex: (17) 99123-4567"
+                  value={clientPhone}
+                  onChange={(e) => setClientPhone(e.target.value)}
+                  className="w-full bg-white text-xs px-3.5 py-3 rounded-xl border border-[#F0E6DC] focus:outline-none focus:ring-1 focus:ring-[#E5A8A3]"
+                />
+              </div>
+
+              <div className="space-y-1.5 md:col-span-2">
+                <label className="text-[10px] font-bold text-[#9E8B83] uppercase tracking-wider">
+                  Já é nossa cliente de Alongamento?
+                </label>
+                <div className="grid grid-cols-2 gap-3">
+                  <button
+                    type="button"
+                    onClick={() => setClientType('Novata')}
+                    className={`p-3 rounded-xl border text-center text-xs font-semibold ${
+                      clientType === 'Novata'
+                        ? 'border-[#E5A8A3] bg-[#FCF8F5] text-[#B57C74]'
+                        : 'border-[#F0E6DC] bg-white hover:border-[#E5A8A3]'
+                    }`}
+                  >
+                    🌸 Não, primeira vez (Novata)
+                  </button>
+                  <button
+                    type="button"
+                    onClick={() => setClientType('Veterana')}
+                    className={`p-3 rounded-xl border text-center text-xs font-semibold ${
+                      clientType === 'Veterana'
+                        ? 'border-[#E5A8A3] bg-[#FCF8F5] text-[#B57C74]'
+                        : 'border-[#F0E6DC] bg-white hover:border-[#E5A8A3]'
+                    }`}
+                  >
+                    👑 Sim, sou cliente (Veterana)
+                  </button>
+                </div>
+              </div>
+
+              <div className="space-y-1.5 md:col-span-2">
+                <label className="text-[10px] font-bold text-[#9E8B83] uppercase tracking-wider">
+                  Observações / Preferência de Decoração (Opcional)
+                </label>
+                <textarea 
+                  rows="2"
+                  placeholder="Diga se quer alguma cor específica, unha decorada, ou se tem alguma unha quebrada."
+                  value={notes}
+                  onChange={(e) => setNotes(e.target.value)}
+                  className="w-full bg-white text-xs p-3 rounded-xl border border-[#F0E6DC] focus:outline-none focus:ring-1 focus:ring-[#E5A8A3]"
+                />
+              </div>
+
+            </div>
+
+            <div className="bg-[#FAF6F0] p-4 rounded-xl border border-[#EBE0D5] text-xs space-y-2">
+              <h4 className="font-bold text-[#4A3F3B] border-b border-[#EBE0D5] pb-1.5 mb-1.5 uppercase tracking-widest text-[9px] text-[#B57C74]">Resumo do Agendamento</h4>
+              <div className="flex justify-between">
+                <span className="text-[#7D6B63]">Serviço de Unhas:</span>
+                <span className="font-bold text-[#4A3F3B]">{selectedService?.name}</span>
+              </div>
+              <div className="flex justify-between">
+                <span className="text-[#7D6B63]">Duração Estimada:</span>
+                <span className="font-semibold text-[#4A3F3B]">{selectedService?.duration}</span>
+              </div>
+              <div className="flex justify-between">
+                <span className="text-[#7D6B63]">Data / Hora Reservada:</span>
+                <span className="font-bold text-[#4A3F3B]">{selectedDate?.split('-').reverse().join('/')} às {selectedTime}</span>
+              </div>
+              <div className="flex justify-between border-t border-[#EBE0D5] pt-1.5 mt-1.5 font-bold">
+                <span className="text-[#8C6D62]">Total Previsto:</span>
+                <span className="text-sm text-[#B57C74]">R$ {selectedService?.price},00</span>
+              </div>
+            </div>
+
+            <div className="pt-4 border-t border-[#F0E6DC] flex justify-between">
+              <button
+                type="button"
+                onClick={handleBackStep}
+                className="px-4 py-2 text-xs font-semibold text-[#7D6B63] hover:text-[#4A3F3B]"
+              >
+                Voltar
+              </button>
+              
+              <button
+                type="submit"
+                className="bg-[#E5A8A3] hover:bg-[#DCA19C] text-white px-6 py-2.5 rounded-xl text-xs font-bold uppercase tracking-wider flex items-center gap-1.5"
+              >
+                Efetuar Agendamento
+                <CheckCircle className="w-4 h-4" />
+              </button>
+            </div>
+          </form>
+        )}
+
+        {step === 4 && (
+          <div className="py-8 text-center space-y-6">
+            <div className="w-16 h-16 bg-[#F7E6E3] rounded-full flex items-center justify-center mx-auto text-[#B57C74] animate-bounce">
+              <Check className="w-8 h-8" />
+            </div>
+
+            <div className="space-y-2 max-w-md mx-auto">
+              <h3 className="text-2xl font-bold font-serif-elegant text-[#4A3F3B]">Agendado com Sucesso! 💅</h3>
+              <p className="text-xs text-[#7D6B63]">Muito obrigada, <strong>{clientName}</strong>. A sua vaga exclusiva está garantida para o dia <strong>{selectedDate?.split('-').reverse().join('/')}</strong> às <strong>{selectedTime}</strong>.</p>
+            </div>
+
+            <div className="bg-[#FAF6F0] p-4 rounded-xl border border-[#EBE0D5] text-xs max-sm mx-auto space-y-2">
+              <p className="text-[#7D6B63]">
+                <strong>O que acontece agora?</strong>
+                <br />
+                O robô registrou o seu agendamento na agenda. A Brenda confirmará diretamente com você por mensagem de WhatsApp.
+              </p>
+            </div>
+
+            <div className="pt-6">
+              <button
+                type="button"
+                onClick={resetForm}
+                className="bg-white hover:bg-[#FAF6F0] text-[#B57C74] border border-[#E5A8A3] px-6 py-2.5 rounded-xl text-xs font-bold uppercase tracking-wider"
+              >
+                Fazer Novo Agendamento
+              </button>
+            </div>
+          </div>
+        )}
+
+      </div>
+    </div>
+  );
+}
