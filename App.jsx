@@ -21,6 +21,7 @@ import {
   ChevronLeft
 } from 'lucide-react';
 
+// --- FONTES & ESTILOS GLOBAIS ---
 const injectStyles = () => {
   if (typeof document !== 'undefined') {
     const id = 'dotto-google-fonts';
@@ -62,16 +63,19 @@ export default function App() {
     injectStyles();
   }, []);
 
+  // --- ESTADOS GLOBAIS ---
   const [activeTab, setActiveTab] = useState('simulator'); 
   const [appointments, setAppointments] = useState([]);
   const [toastMessage, setToastMessage] = useState(null);
   const [toastType, setToastType] = useState('success'); 
 
+  // Controle de segurança para o painel admin
   const [isAdminLoggedIn, setIsAdminLoggedIn] = useState(false);
   const [adminPassword, setAdminPassword] = useState('');
   const [showPassword, setShowPassword] = useState(false);
   const [loginError, setLoginError] = useState(false); 
 
+  // Lista de serviços oferecidos com os valores promocionais mínimos
   const services = [
     { id: 'esmaltacao_gel', name: 'Esmaltação em Gel', category: 'Novos & Blindagem', duration: '1h30', price: 25, desc: 'Aplicação de esmalte em gel premium com secagem na cabine LED. Brilho duradouro por semanas sem descascar.' },
     { id: 'banho_gel', name: 'Banho de Gel', category: 'Novos & Blindagem', duration: '2h45', price: 50, desc: 'Ideal para blindar e fortalecer o crescimento das unhas naturais com camada de gel premium.' },
@@ -82,7 +86,12 @@ export default function App() {
     { id: 'conserto', name: 'Conserto de Unha Avulsa', category: 'Remoções e Extras', duration: '0h30', price: 5, desc: 'Reparação de emergência para uma unha partida ou danificada.' }
   ];
 
+  // --- LÓGICA DE ARMAZENAMENTO LOCAL ---
   useEffect(() => {
+    loadLocalData();
+  }, []);
+
+  const loadLocalData = () => {
     const saved = localStorage.getItem('dotto_appointments');
     if (saved) {
       try {
@@ -90,8 +99,10 @@ export default function App() {
       } catch (e) {
         setAppointments([]);
       }
+    } else {
+      setAppointments([]); 
     }
-  }, []);
+  };
 
   const saveAppointmentsState = (newList) => {
     setAppointments(newList);
@@ -134,6 +145,7 @@ export default function App() {
     showToast("Agendamento removido.", "info");
   };
 
+  // --- CONTROLE DO SIMULADOR ---
   const [chatMessages, setChatMessages] = useState([
     { sender: 'bot', text: 'Olá! ✨ Seja muito bem-vinda ao espaço Brenda Heredia Beauty. Sou a sua assistente virtual.', time: 'Agora' },
     { sender: 'bot', text: 'Deseja agendar um serviço, consultar valores ou falar conosco? Selecione uma das opções abaixo:', time: 'Agora', isOptions: true }
@@ -192,6 +204,7 @@ export default function App() {
   return (
     <div className="min-h-screen bg-[#FAF6F0] text-[#4A3F3B] flex flex-col antialiased">
       
+      {/* --- BANNER DE INFORMAÇÃO / ALERTA DE TOAST --- */}
       {toastMessage && (
         <div className="fixed top-5 left-1/2 transform -translate-x-1/2 z-50 flex items-center gap-3 px-4 py-3 rounded-full shadow-lg bg-white border border-[#E5A8A3]">
           {toastType === 'success' && <CheckCircle className="w-5 h-5 text-emerald-500" />}
@@ -201,6 +214,7 @@ export default function App() {
         </div>
       )}
 
+      {/* --- HEADER E NAVEGAÇÃO SUPERIOR --- */}
       <header className="bg-white border-b border-[#F0E6DC] py-4 px-6 sticky top-0 z-50 shadow-sm">
         <div className="max-w-6xl mx-auto flex flex-col md:flex-row justify-between items-center gap-4">
           <div className="text-center md:text-left">
@@ -236,11 +250,14 @@ export default function App() {
         </div>
       </header>
 
+      {/* --- CONTEÚDO PRINCIPAL --- */}
       <main className="flex-1 max-w-6xl w-full mx-auto p-4 md:p-6">
         
+        {/* ================= ABA: SIMULADOR DE BOT (WHATSAPP) ================= */}
         {activeTab === 'simulator' && (
           <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-start">
             
+            {/* Esquerda: GUIA DE ATENDIMENTO PARA A CLIENTE */}
             <div className="lg:col-span-5 space-y-6">
               <div className="bg-white p-6 rounded-2xl border border-[#F0E6DC] shadow-sm">
                 <span className="text-[10px] uppercase tracking-widest font-bold text-[#B57C74] bg-[#F7E6E3] px-2 py-1 rounded">Agendamento Fácil</span>
@@ -264,6 +281,13 @@ export default function App() {
                       <p className="text-xs text-[#7D6B63] mt-0.5">Clique no botão "ABRIR AGENDA ONLINE" enviado pela assistente ou navegue pelas abas superiores.</p>
                     </div>
                   </div>
+                  <div className="flex gap-3">
+                    <div className="w-8 h-8 rounded-full bg-[#FAF6F0] flex items-center justify-center text-xs font-bold text-[#B57C74] shrink-0 border border-[#F0E6DC]">3</div>
+                    <div>
+                      <h4 className="text-xs font-bold text-[#4A3F3B]">Confirme e Relaxe</h4>
+                      <p className="text-xs text-[#7D6B63] mt-0.5">Escolha o melhor dia e horário na grade mensal e preencha seus dados de contato. Seu horário exclusivo estará salvo!</p>
+                    </div>
+                  </div>
                 </div>
 
                 <div className="mt-8 pt-6 border-t border-[#F0E6DC] text-center">
@@ -285,13 +309,16 @@ export default function App() {
               </div>
             </div>
 
+            {/* Direita: Mockup do Celular */}
             <div className="lg:col-span-7 flex justify-center">
               <div className="w-full max-w-[380px] bg-white rounded-[40px] border-[10px] border-[#4A3F3B] shadow-2xl overflow-hidden flex flex-col h-[640px] relative">
                 
+                {/* Detalhe do Celular */}
                 <div className="absolute top-0 left-1/2 transform -translate-x-1/2 h-5 w-36 bg-[#4A3F3B] rounded-b-2xl z-10 flex items-center justify-center">
                   <div className="w-12 h-1 bg-gray-600 rounded-full"></div>
                 </div>
 
+                {/* Cabeçalho do WhatsApp */}
                 <div className="bg-[#FAF6F0] border-b border-[#F0E6DC] pt-8 pb-3 px-4 flex items-center gap-3">
                   <div className="w-9 h-9 rounded-full bg-[#E5A8A3] flex items-center justify-center text-white font-bold relative shrink-0">
                     B
@@ -305,6 +332,7 @@ export default function App() {
                   </div>
                 </div>
 
+                {/* Corpo das Mensagens do Chat */}
                 <div 
                   ref={chatContainerRef}
                   className="flex-1 bg-[#FAF6F0] p-4 overflow-y-auto space-y-3 flex flex-col justify-between" 
@@ -369,6 +397,7 @@ export default function App() {
                   </div>
                 </div>
 
+                {/* Rodapé de Mensagem */}
                 <div className="bg-white p-3 border-t border-[#F0E6DC] flex gap-2 items-center">
                   <input 
                     type="text" 
@@ -391,12 +420,14 @@ export default function App() {
           </div>
         )}
 
+        {/* ================= ABA: PLATAFORMA DE AGENDAMENTO (CLIENTE) ================= */}
         {activeTab === 'booking' && (
           <div className="max-w-3xl mx-auto">
             <BookingWizard services={services} appointments={appointments} onComplete={handleCreateAppointment} />
           </div>
         )}
 
+        {/* ================= ABA: PAINEL PROFISSIONAL (ADMIN) ================= */}
         {activeTab === 'admin' && (
           <div className="max-w-4xl mx-auto space-y-6">
             
@@ -624,8 +655,9 @@ function BookingWizard({ services, appointments, onComplete }) {
   const [clientType, setClientType] = useState('Novata'); 
   const [notes, setNotes] = useState('');
 
-  const todayDate = new Date(2026, 4, 27); 
-  const [viewDate, setViewDate] = useState(new Date(2026, 4, 1)); 
+  // PEGA A DATA ATUAL EXATA DO DISPOSITIVO DO CLIENTE DE FORMA TOTALMENTE DINÂMICA
+  const now = new Date();
+  const [viewDate, setViewDate] = useState(new Date(now.getFullYear(), now.getMonth(), 1)); 
 
   const categories = ['Novos & Blindagem', 'Manutenções', 'Remoções e Extras'];
 
@@ -649,10 +681,11 @@ function BookingWizard({ services, appointments, onComplete }) {
     const checkDate = new Date(year, month, dayNum);
     const dayOfWeek = checkDate.getDay();
 
+    // Bloqueia domingos (0) e sábados (6)
     if (dayOfWeek === 0 || dayOfWeek === 6) return true;
 
     const pureCheck = new Date(year, month, dayNum).setHours(0,0,0,0);
-    const pureToday = new Date(2026, 4, 27).setHours(0,0,0,0);
+    const pureToday = new Date().setHours(0,0,0,0); // DIA ATUAL REAL E DINÂMICO
     
     if (pureCheck < pureToday) return true;
 
@@ -661,7 +694,8 @@ function BookingWizard({ services, appointments, onComplete }) {
       if (slotsHoje.length === 0) return true; 
     }
 
-    const maxDate = new Date(2026, 4, 27);
+    // Permite agendamentos até 30 dias para frente a partir do dia atual
+    const maxDate = new Date();
     maxDate.setDate(maxDate.getDate() + 30);
     if (checkDate > maxDate) return true;
 
@@ -677,8 +711,9 @@ function BookingWizard({ services, appointments, onComplete }) {
     
     let baseSlots = [];
     
+    // CORREÇÃO AQUI: Sexta-feira (day === 5) agora lista apenas até às 15:30 como o último horário
     if (day === 5) { 
-      baseSlots = ['08:00', '09:30', '11:00', '12:30', '14:00', '15:30', '17:00'];
+      baseSlots = ['08:00', '09:30', '11:00', '12:30', '14:00', '15:30'];
     } else { 
       baseSlots = ['10:00', '11:30', '13:00', '14:30', '16:00'];
     }
@@ -697,15 +732,20 @@ function BookingWizard({ services, appointments, onComplete }) {
 
     const currentDuration = selectedService ? durToMins(selectedService.duration) : 90;
 
-    const agoraMins = 23 * 60 + 1; 
-    const pureTodayStr = "2026-05-27";
+    // PEGA A HORA E MINUTOS REAIS AGORA DO CELULAR DA CLIENTE
+    const currentRealTime = new Date();
+    const currentMins = currentRealTime.getHours() * 60 + currentRealTime.getMinutes();
+    
+    // Formata a data de hoje para bater com a seleção
+    const todayStr = `${currentRealTime.getFullYear()}-${String(currentRealTime.getMonth() + 1).padStart(2, '0')}-${String(currentRealTime.getDate').padStart(2, '0')}`;
 
     return baseSlots.filter((slotTime) => {
       const slotStart = timeToMins(slotTime);
       const slotEnd = slotStart + currentDuration;
 
-      if (dateStr === pureTodayStr) {
-        if (slotStart <= agoraMins) return false;
+      // BLOQUEIO DINÂMICO DE HORÁRIOS QUE JÁ PASSARAM NO DIA DE HOJE
+      if (dateStr === todayStr) {
+        if (slotStart <= currentMins) return false;
       }
 
       const isOverlapping = appointments && appointments.some((app) => {
@@ -767,7 +807,8 @@ function BookingWizard({ services, appointments, onComplete }) {
     setClientPhone('');
     setClientType('Novata');
     setNotes('');
-    setViewDate(new Date(2026, 4, 1));
+    const dReal = new Date();
+    setViewDate(new Date(dReal.getFullYear(), dReal.getMonth(), 1));
   };
 
   const handlePrevMonth = () => {
@@ -838,7 +879,7 @@ function BookingWizard({ services, appointments, onComplete }) {
                           
                           <div className="flex items-center gap-1 text-[10px] text-[#A6948E] font-medium mt-2 pt-2 border-t border-[#FAF6F0]">
                             <Clock className="w-3 h-3 text-[#E5A8A3]" />
-                            Duração prevista: {service.duration}
+                            Duraçao prevista: {service.duration}
                           </div>
                         </div>
                       ))}
@@ -884,7 +925,7 @@ function BookingWizard({ services, appointments, onComplete }) {
                     <button 
                       type="button"
                       onClick={handlePrevMonth}
-                      disabled={viewDate.getMonth() === todayDate.getMonth() && viewDate.getFullYear() === todayDate.getFullYear()}
+                      disabled={viewDate.getMonth() === new Date().getMonth() && viewDate.getFullYear() === new Date().getFullYear()}
                       className="p-1 rounded bg-[#FAF6F0] hover:bg-[#EBE0D5] text-[#8C6D62] transition-colors disabled:opacity-30 disabled:cursor-not-allowed"
                     >
                       <ChevronLeft className="w-4 h-4" />
