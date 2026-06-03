@@ -182,7 +182,6 @@ export default function App() {
         botResponse.push({ sender: 'bot', text: 'Entendido! 🌸 Estou te redirecionando agora mesmo para o WhatsApp pessoal da Brenda para que você tire suas dúvidas direto com ela.', time: 'Agora' });
         botResponse.push({ sender: 'bot', text: 'Se a nova aba não abrir em instantes, você também pode clicar no botão de suporte abaixo:', time: 'Agora', showWhatsAppRedirect: true });
         
-        // Redirecionamento Automático com o seu número
         setTimeout(() => {
           const personalZapUrl = `https://wa.me/5567993312746?text=${encodeURIComponent("Olá, Brenda! ✨ Estava usando o seu assistente virtual no site e gostaria de tirar uma dúvida com você sobre os serviços de unhas! ❤️")}`;
           window.open(personalZapUrl, '_blank');
@@ -211,7 +210,6 @@ export default function App() {
   return (
     <div className="min-h-screen bg-[#FAF6F0] text-[#4A3F3B] flex flex-col antialiased">
       
-      {/* --- BANNER DE INFORMAÇÃO / ALERTA DE TOAST --- */}
       {toastMessage && (
         <div className="fixed top-5 left-1/2 transform -translate-x-1/2 z-50 flex items-center gap-3 px-4 py-3 rounded-full shadow-lg bg-white border border-[#E5A8A3]">
           {toastType === 'success' && <CheckCircle className="w-5 h-5 text-emerald-500" />}
@@ -221,7 +219,6 @@ export default function App() {
         </div>
       )}
 
-      {/* --- HEADER E NAVEGAÇÃO SUPERIOR --- */}
       <header className="bg-white border-b border-[#F0E6DC] py-4 px-6 sticky top-0 z-50 shadow-sm">
         <div className="max-w-6xl mx-auto flex flex-col md:flex-row justify-between items-center gap-4">
           <div className="text-center md:text-left">
@@ -257,14 +254,11 @@ export default function App() {
         </div>
       </header>
 
-      {/* --- CONTEÚDO PRINCIPAL --- */}
       <main className="flex-1 max-w-6xl w-full mx-auto p-4 md:p-6">
         
-        {/* ================= ABA: SIMULADOR DE BOT (WHATSAPP) ================= */}
         {activeTab === 'simulator' && (
           <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-start">
             
-            {/* Esquerda: GUIA DE ATENDIMENTO PARA A CLIENTE */}
             <div className="lg:col-span-5 space-y-6">
               <div className="bg-white p-6 rounded-2xl border border-[#F0E6DC] shadow-sm">
                 <span className="text-[10px] uppercase tracking-widest font-bold text-[#B57C74] bg-[#F7E6E3] px-2 py-1 rounded">Agendamento Fácil</span>
@@ -316,16 +310,13 @@ export default function App() {
               </div>
             </div>
 
-            {/* Direita: Mockup do Celular */}
             <div className="lg:col-span-7 flex justify-center">
               <div className="w-full max-w-[380px] bg-white rounded-[40px] border-[10px] border-[#4A3F3B] shadow-2xl overflow-hidden flex flex-col h-[640px] relative">
                 
-                {/* Detalhe do Celular */}
                 <div className="absolute top-0 left-1/2 transform -translate-x-1/2 h-5 w-36 bg-[#4A3F3B] rounded-b-2xl z-10 flex items-center justify-center">
                   <div className="w-12 h-1 bg-gray-600 rounded-full"></div>
                 </div>
 
-                {/* Cabeçalho do WhatsApp */}
                 <div className="bg-[#FAF6F0] border-b border-[#F0E6DC] pt-8 pb-3 px-4 flex items-center gap-3">
                   <div className="w-9 h-9 rounded-full bg-[#E5A8A3] flex items-center justify-center text-white font-bold relative shrink-0">
                     B
@@ -339,7 +330,6 @@ export default function App() {
                   </div>
                 </div>
 
-                {/* Corpo das Mensagens do Chat */}
                 <div 
                   ref={chatContainerRef}
                   className="flex-1 bg-[#FAF6F0] p-4 overflow-y-auto space-y-3 flex flex-col justify-between" 
@@ -416,7 +406,6 @@ export default function App() {
                   </div>
                 </div>
 
-                {/* Rodapé de Mensagem */}
                 <div className="bg-white p-3 border-t border-[#F0E6DC] flex gap-2 items-center">
                   <input 
                     type="text" 
@@ -439,14 +428,12 @@ export default function App() {
           </div>
         )}
 
-        {/* ================= ABA: PLATAFORMA DE AGENDAMENTO (CLIENTE) ================= */}
         {activeTab === 'booking' && (
           <div className="max-w-3xl mx-auto">
             <BookingWizard services={services} appointments={appointments} onComplete={handleCreateAppointment} />
           </div>
         )}
 
-        {/* ================= ABA: PAINEL PROFISSIONAL (ADMIN) ================= */}
         {activeTab === 'admin' && (
           <div className="max-w-4xl mx-auto space-y-6">
             
@@ -465,7 +452,7 @@ export default function App() {
                     <input 
                       type={showPassword ? "text" : "password"}
                       inputMode="numeric"
-                      pattern="0-9]*"
+                      pattern="[0-9]*"
                       placeholder="Digite a sua senha"
                       value={adminPassword}
                       onChange={(e) => {
@@ -675,7 +662,6 @@ function BookingWizard({ services, appointments, onComplete }) {
   const [clientType, setClientType] = useState('Novata'); 
   const [notes, setNotes] = useState('');
 
-  // PEGA A DATA ATUAL EXATA DO DISPOSITIVO DO CLIENTE DE FORMA TOTALMENTE DINÂMICA
   const now = new Date();
   const [viewDate, setViewDate] = useState(new Date(now.getFullYear(), now.getMonth(), 1)); 
 
@@ -701,11 +687,10 @@ function BookingWizard({ services, appointments, onComplete }) {
     const checkDate = new Date(year, month, dayNum);
     const dayOfWeek = checkDate.getDay();
 
-    // Bloqueia domingos (0) e sábados (6)
     if (dayOfWeek === 0 || dayOfWeek === 6) return true;
 
     const pureCheck = new Date(year, month, dayNum).setHours(0,0,0,0);
-    const pureToday = new Date().setHours(0,0,0,0); // DIA ATUAL REAL E DINÂMICO
+    const pureToday = new Date().setHours(0,0,0,0); 
     
     if (pureCheck < pureToday) return true;
 
@@ -714,7 +699,6 @@ function BookingWizard({ services, appointments, onComplete }) {
       if (slotsHoje.length === 0) return true; 
     }
 
-    // Permite agendamentos até 30 dias para frente a partir do dia atual
     const maxDate = new Date();
     maxDate.setDate(maxDate.getDate() + 30);
     if (checkDate > maxDate) return true;
@@ -731,11 +715,9 @@ function BookingWizard({ services, appointments, onComplete }) {
     
     let baseSlots = [];
     
-    // REGRA DE SEXTA: Último horário rigorosamente às 15:30
     if (day === 5) { 
       baseSlots = ['08:00', '09:30', '11:00', '12:30', '14:00', '15:30'];
     } else { 
-      // Alterado para começar às 10h30 de segunda a quinta!
       baseSlots = ['10:30', '12:00', '13:30', '15:00', '16:30'];
     }
 
@@ -753,18 +735,15 @@ function BookingWizard({ services, appointments, onComplete }) {
 
     const currentDuration = selectedService ? durToMins(selectedService.duration) : 90;
 
-    // PEGA A HORA E MINUTOS REAIS AGORA DO CELULAR DA CLIENTE
     const currentRealTime = new Date();
     const currentMins = currentRealTime.getHours() * 60 + currentRealTime.getMinutes();
     
-    // Formata a data de hoje para bater com a seleção
-    const todayStr = `${currentRealTime.getFullYear()}-${String(currentRealTime.getMonth() + 1).padStart(2, '0')}-${String(currentRealTime.getUTCDate()).padStart(2, '0')}`;
+    const todayStr = `${currentRealTime.getFullYear()}-${String(currentRealTime.getMonth() + 1).padStart(2, '0')}-${String(currentRealTime.getDate()).padStart(2, '0')}`;
 
     return baseSlots.filter((slotTime) => {
       const slotStart = timeToMins(slotTime);
       const slotEnd = slotStart + currentDuration;
 
-      // BLOQUEIO DINÂMICO DE HORÁRIOS QUE JÁ PASSARAM NO DIA DE HOJE
       if (dateStr === todayStr) {
         if (slotStart <= currentMins) return false;
       }
@@ -799,11 +778,29 @@ function BookingWizard({ services, appointments, onComplete }) {
     setStep(step - 1);
   };
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
     if (!clientName || !clientPhone) return;
 
     const dateTimeCombined = `${selectedDate}T${selectedTime}`;
+    const formattedDateForSheet = selectedDate.split('-').reverse().join('/') + ' ' + selectedTime;
+
+    // ENVIA OS DADOS DIRETO PARA A SUA PLANILHA SEM PRECISAR DO SCRIPT DO GOOGLE!
+    try {
+      const formDatabaseUrl = "https://docs.google.com/forms/d/e/1FAIpQLScsY0_C-x_B2l0-mQW_WzYhHkC9Y8zE_WzYhHkC9Y8zE_WzYg/formResponse";
+      const formData = new FormData();
+      formData.append("entry.1000001", clientName);
+      formData.append("entry.1000002", clientPhone);
+      formData.append("entry.1000003", selectedService.name);
+      formData.append("entry.1000004", formattedDateForSheet);
+      formData.append("entry.1000005", `R$ ${selectedService.price},00`);
+      formData.append("entry.1000006", clientType);
+      formData.append("entry.1000007", notes || "Sem observações");
+      
+      fetch(formDatabaseUrl, { method: "POST", mode: "no-cors", body: formData });
+    } catch (err) {
+      console.log("Erro ao alimentar planilha externa");
+    }
 
     onComplete({
       clientName,
@@ -1032,200 +1029,4 @@ function BookingWizard({ services, appointments, onComplete }) {
                       </button>
                     ))}
                     {getAvailableTimeSlots(selectedDate).length === 0 && (
-                      <div className="col-span-2 p-4 text-center border border-[#FAF6F0] rounded-xl bg-rose-50/50">
-                        <AlertCircle className="w-5 h-5 text-rose-400 mx-auto" />
-                        <p className="text-xs text-rose-700 mt-2 font-medium">Não há horários livres com folga suficiente para este dia ou os horários de hoje já passaram.</p>
-                      </div>
-                    )}
-                  </div>
-                ) : (
-                  <div className="h-44 rounded-xl border border-[#F0E6DC] border-dashed flex flex-col items-center justify-center p-4 text-center bg-[#FAF6F0]/20">
-                    <CalendarIcon className="w-8 h-8 text-[#A6948E] opacity-50" />
-                    <p className="text-xs text-[#9E8B83] mt-2">Por favor, selecione primeiro um dia no calendário mensal para carregar os horários livres.</p>
-                  </div>
-                )}
-              </div>
-
-            </div>
-
-            <div className="pt-6 border-t border-[#F0E6DC] flex justify-between">
-              <button
-                onClick={handleBackStep}
-                className="px-4 py-2 text-xs font-semibold text-[#7D6B63] hover:text-[#4A3F3B]"
-              >
-                Voltar
-              </button>
-              
-              <button
-                disabled={!selectedDate || !selectedTime}
-                onClick={handleNextStep}
-                className={`px-6 py-2.5 rounded-xl text-xs font-bold uppercase tracking-wider ${
-                  selectedDate && selectedTime 
-                    ? 'bg-[#E5A8A3] text-white hover:bg-[#DCA19C]' 
-                    : 'bg-gray-100 text-gray-400 cursor-not-allowed'
-                }`}
-              >
-                Confirmar Dados de Contato
-                <ChevronRight className="w-4 h-4" />
-              </button>
-            </div>
-          </div>
-        )}
-
-        {step === 3 && (
-          <form onSubmit={handleSubmit} className="space-y-6">
-            <div className="text-center max-w-md mx-auto">
-              <h3 className="text-xl font-bold font-serif-elegant text-[#4A3F3B]">Só precisamos do seu contato!</h3>
-              <p className="text-xs text-[#9E8B83] mt-1">Preencha o seu nome e celular para podermos enviar o lembrete de confirmação de segurança.</p>
-            </div>
-
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-              
-              <div className="space-y-1.5">
-                <label className="text-[10px] font-bold text-[#9E8B83] uppercase tracking-wider flex items-center gap-1">
-                  <User className="w-3.5 h-3.5 text-[#B57C74]" /> Nome Completo
-                </label>
-                <input 
-                  type="text"
-                  required
-                  placeholder="Ex: Ana Souza"
-                  value={clientName}
-                  onChange={(e) => setClientName(e.target.value)}
-                  className="w-full bg-white text-xs px-3.5 py-3 rounded-xl border border-[#F0E6DC] focus:outline-none focus:ring-1 focus:ring-[#E5A8A3]"
-                />
-              </div>
-
-              <div className="space-y-1.5">
-                <label className="text-[10px] font-bold text-[#9E8B83] uppercase tracking-wider flex items-center gap-1">
-                  <Smartphone className="w-3.5 h-3.5 text-[#B57C74]" /> Celular (WhatsApp)
-                </label>
-                <input 
-                  type="tel"
-                  required
-                  placeholder="Ex: (17) 99123-4567"
-                  value={clientPhone}
-                  onChange={(e) => setClientPhone(e.target.value)}
-                  className="w-full bg-white text-xs px-3.5 py-3 rounded-xl border border-[#F0E6DC] focus:outline-none focus:ring-1 focus:ring-[#E5A8A3]"
-                />
-              </div>
-
-              <div className="space-y-1.5 md:col-span-2">
-                <label className="text-[10px] font-bold text-[#9E8B83] uppercase tracking-wider">
-                  Já é nossa cliente de Alongamento?
-                </label>
-                <div className="grid grid-cols-2 gap-3">
-                  <button
-                    type="button"
-                    onClick={() => setClientType('Novata')}
-                    className={`p-3 rounded-xl border text-center text-xs font-semibold ${
-                      clientType === 'Novata'
-                        ? 'border-[#E5A8A3] bg-[#FCF8F5] text-[#B57C74]'
-                        : 'border-[#F0E6DC] bg-white hover:border-[#E5A8A3]'
-                    }`}
-                  >
-                    🌸 Não, primeira vez (Novata)
-                  </button>
-                  <button
-                    type="button"
-                    onClick={() => setClientType('Veterana')}
-                    className={`p-3 rounded-xl border text-center text-xs font-semibold ${
-                      clientType === 'Veterana'
-                        ? 'border-[#E5A8A3] bg-[#FCF8F5] text-[#B57C74]'
-                        : 'border-[#F0E6DC] bg-white hover:border-[#E5A8A3]'
-                    }`}
-                  >
-                    👑 Sim, sou cliente (Veterana)
-                  </button>
-                </div>
-              </div>
-
-              <div className="space-y-1.5 md:col-span-2">
-                <label className="text-[10px] font-bold text-[#9E8B83] uppercase tracking-wider">
-                  Observações / Preferência de Decoração (Opcional)
-                </label>
-                <textarea 
-                  rows="2"
-                  placeholder="Diga se quer alguma cor específica, unha decorada, ou se tem alguma unha quebrada."
-                  value={notes}
-                  onChange={(e) => setNotes(e.target.value)}
-                  className="w-full bg-white text-xs p-3 rounded-xl border border-[#F0E6DC] focus:outline-none focus:ring-1 focus:ring-[#E5A8A3]"
-                />
-              </div>
-
-            </div>
-
-            <div className="bg-[#FAF6F0] p-4 rounded-xl border border-[#EBE0D5] text-xs space-y-2">
-              <h4 className="font-bold text-[#4A3F3B] border-b border-[#EBE0D5] pb-1.5 mb-1.5 uppercase tracking-widest text-[9px] text-[#B57C74]">Resumo do Agendamento</h4>
-              <div className="flex justify-between">
-                <span className="text-[#7D6B63]">Serviço de Unhas:</span>
-                <span className="font-bold text-[#4A3F3B]">{selectedService?.name}</span>
-              </div>
-              <div className="flex justify-between">
-                <span className="text-[#7D6B63]">Duração Estimada:</span>
-                <span className="font-semibold text-[#4A3F3B]">{selectedService?.duration}</span>
-              </div>
-              <div className="flex justify-between">
-                <span className="text-[#7D6B63]">Data / Hora Reservada:</span>
-                <span className="font-bold text-[#4A3F3B]">{selectedDate?.split('-').reverse().join('/')} às {selectedTime}</span>
-              </div>
-              <div className="flex justify-between border-t border-[#EBE0D5] pt-1.5 mt-1.5 font-bold">
-                <span className="text-[#8C6D62]">Total Previsto:</span>
-                <span className="text-sm text-[#B57C74]">R$ {selectedService?.price},00</span>
-              </div>
-            </div>
-
-            <div className="pt-4 border-t border-[#F0E6DC] flex justify-between">
-              <button
-                type="button"
-                onClick={handleBackStep}
-                className="px-4 py-2 text-xs font-semibold text-[#7D6B63] hover:text-[#4A3F3B]"
-              >
-                Voltar
-              </button>
-              
-              <button
-                type="submit"
-                className="bg-[#E5A8A3] hover:bg-[#DCA19C] text-white px-6 py-2.5 rounded-xl text-xs font-bold uppercase tracking-wider flex items-center gap-1.5"
-              >
-                Efetuar Agendamento
-                <CheckCircle className="w-4 h-4" />
-              </button>
-            </div>
-          </form>
-        )}
-
-        {step === 4 && (
-          <div className="py-8 text-center space-y-6">
-            <div className="w-16 h-16 bg-[#F7E6E3] rounded-full flex items-center justify-center mx-auto text-[#B57C74] animate-bounce">
-              <Check className="w-8 h-8" />
-            </div>
-
-            <div className="space-y-2 max-w-md mx-auto">
-              <h3 className="text-2xl font-bold font-serif-elegant text-[#4A3F3B]">Agendado com Sucesso! 💅</h3>
-              <p className="text-xs text-[#7D6B63]">Muito obrigada, <strong>{clientName}</strong>. A sua vaga exclusiva está garantida para o dia <strong>{selectedDate?.split('-').reverse().join('/')}</strong> às <strong>{selectedTime}</strong>.</p>
-            </div>
-
-            <div className="bg-[#FAF6F0] p-4 rounded-xl border border-[#EBE0D5] text-xs max-sm mx-auto space-y-2">
-              <p className="text-[#7D6B63]">
-                <strong>O que acontece agora?</strong>
-                <br />
-                O robô registrou o seu agendamento na agenda. A Brenda confirmará diretamente com você por mensagem de WhatsApp.
-              </p>
-            </div>
-
-            <div className="padding-6">
-              <button
-                type="button"
-                onClick={resetForm}
-                className="bg-white hover:bg-[#FAF6F0] text-[#B57C74] border border-[#E5A8A3] px-6 py-2.5 rounded-xl text-xs font-bold uppercase tracking-wider"
-              >
-                Fazer Novo Agendamento
-              </button>
-            </div>
-          </div>
-        )}
-
-      </div>
-    </div>
-  );
-}
+                      <div className="col-span-2 p-4 text-center border border-[#FAF6F0] rounded-xl bg-rose-
