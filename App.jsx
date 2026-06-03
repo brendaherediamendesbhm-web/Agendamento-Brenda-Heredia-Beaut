@@ -465,7 +465,7 @@ export default function App() {
                     <input 
                       type={showPassword ? "text" : "password"}
                       inputMode="numeric"
-                      pattern="[0-9]*"
+                      pattern="0-9]*"
                       placeholder="Digite a sua senha"
                       value={adminPassword}
                       onChange={(e) => {
@@ -735,7 +735,8 @@ function BookingWizard({ services, appointments, onComplete }) {
     if (day === 5) { 
       baseSlots = ['08:00', '09:30', '11:00', '12:30', '14:00', '15:30'];
     } else { 
-      baseSlots = ['10:00', '11:30', '13:00', '14:30', '16:00'];
+      // Alterado para começar às 10h30 de segunda a quinta!
+      baseSlots = ['10:30', '12:00', '13:30', '15:00', '16:30'];
     }
 
     const timeToMins = (t) => {
