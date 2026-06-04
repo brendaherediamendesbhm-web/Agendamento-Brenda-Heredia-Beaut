@@ -807,8 +807,8 @@ function BookingWizard({ services, appointments, onComplete }) {
       });
 
       // 2. Dispara o aviso para o seu Telegram
-      const telegramBotToken = "7449298375:AAF9Z-N386zExBq_Yt6PzV_3_lOd6K9qU1M";
-      const telegramChatId = "6020583192";
+      const telegramBotToken = "8608778817:AAHitHMcyMUmB2Z2hSzQWcSNCrnhY-08H6k";
+      const telegramChatId = "BrendaNails_bot";
       const telegramText = `💅 *Novo Agendamento!*\n\n👤 *Cliente:* ${payload.clientName}\n📱 *Contato:* ${payload.clientPhone}\n✨ *Procedimento:* ${payload.serviceName}\n📅 *Data/Hora:* ${payload.dateTime}\n💰 *Valor:* ${payload.price}\n📝 *Obs:* ${payload.notes}`;
       
       await fetch(`https://api.telegram.org/bot${telegramBotToken}/sendMessage`, {
