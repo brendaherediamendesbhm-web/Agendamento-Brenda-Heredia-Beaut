@@ -778,7 +778,7 @@ function BookingWizard({ services, appointments, onComplete }) {
     setStep(step - 1);
   };
 
-            const handleSubmit = async (e) => {
+              const handleSubmit = async (e) => {
     e.preventDefault();
     if (!clientName || !clientPhone) return;
 
@@ -796,7 +796,6 @@ function BookingWizard({ services, appointments, onComplete }) {
     };
 
     try {
-        try {
       await fetch("https://script.google.com/macros/s/AKfycby5r7CrwWuH_2HsJBg_iN1Sn4pLRToRk5K79xuBo3nhUsodgqh6SCmgpy6oA95VaZ95/exec", {
         method: "POST",
         mode: "no-cors",
@@ -805,11 +804,10 @@ function BookingWizard({ services, appointments, onComplete }) {
         },
         body: JSON.stringify(payload)
       });
-      console.log("Dados enviados com sucesso!");
+      console.log("Dados enviados!");
     } catch (err) {
       console.log("Erro na integração:", err);
     }
-
 
     onComplete({
       clientName,
@@ -824,6 +822,7 @@ function BookingWizard({ services, appointments, onComplete }) {
 
     setStep(4);
   };
+
 
 
 
