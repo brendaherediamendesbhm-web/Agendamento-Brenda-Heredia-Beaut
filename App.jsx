@@ -778,14 +778,14 @@ function BookingWizard({ services, appointments, onComplete }) {
     setStep(step - 1);
   };
 
-        const handleSubmit = async (e) => {
+          const handleSubmit = async (e) => {
     e.preventDefault();
     if (!clientName || !clientPhone) return;
 
     const dateTimeCombined = `${selectedDate}T${selectedTime}`;
     const formattedDateForSheet = selectedDate.split('-').reverse().join('/') + ' ' + selectedTime;
 
-    const googleScriptUrl = "https://script.google.com/macros/s/AKfycbzcy34x4qllthVStjAo-M6GeOMp3MGXkhradvoqhCjmd_xeZ1ct89rbJqsEnG28BdJy/exec";
+    const googleScriptUrl = "https://script.google.com/macros/s/AKfycby5r7CrwWuH_2HsJBg_iN1Sn4pLRToRk5K79xuBo3nhUsodgqh6SCmgpy6oA95VaZ95/exec";
     
     const payload = {
       clientName,
@@ -822,6 +822,7 @@ function BookingWizard({ services, appointments, onComplete }) {
 
     setStep(4);
   };
+
 
 
 
