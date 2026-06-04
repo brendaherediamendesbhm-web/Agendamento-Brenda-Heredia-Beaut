@@ -778,7 +778,7 @@ function BookingWizard({ services, appointments, onComplete }) {
     setStep(step - 1);
   };
 
-    const handleSubmit = async (e) => {
+      const handleSubmit = async (e) => {
     e.preventDefault();
     if (!clientName || !clientPhone) return;
 
@@ -798,23 +798,12 @@ function BookingWizard({ services, appointments, onComplete }) {
     };
 
     try {
-      // 1. Envia para a sua Planilha do Google
+      // Envia os dados para o Google Script salvar na planilha e avisar o Telegram
       await fetch(googleScriptUrl, {
         method: "POST",
         mode: "no-cors",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(payload)
-      });
-
-      // 2. Dispara o aviso para o seu Telegram
-      const telegramBotToken = "8608778817:AAHitHMcyMUmB2Z2hSzQWcSNCrnhY-08H6k";
-      const telegramChatId = "BrendaNails_bot";
-      const telegramText = `💅 *Novo Agendamento!*\n\n👤 *Cliente:* ${payload.clientName}\n📱 *Contato:* ${payload.clientPhone}\n✨ *Procedimento:* ${payload.serviceName}\n📅 *Data/Hora:* ${payload.dateTime}\n💰 *Valor:* ${payload.price}\n📝 *Obs:* ${payload.notes}`;
-      
-      await fetch(`https://api.telegram.org/bot${telegramBotToken}/sendMessage`, {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ chat_id: telegramChatId, text: telegramText, parse_mode: "Markdown" })
       });
     } catch (err) {
       console.log("Erro na integração:", err);
@@ -833,6 +822,7 @@ function BookingWizard({ services, appointments, onComplete }) {
 
     setStep(4);
   };
+
 
 
   const resetForm = () => {
