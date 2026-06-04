@@ -75,13 +75,13 @@ export default function App() {
   const [showPassword, setShowPassword] = useState(false);
   const [loginError, setLoginError] = useState(false); 
 
-  // Lista de serviços oferecidos com os valores promocionais mínimos
+  // LISTA DE SERVIÇOS ATUALIZADA COM VALORES DE MODELO SOLICITADOS
   const services = [
-    { id: 'esmaltacao_gel', name: 'Esmaltação em Gel', category: 'Novos & Blindagem', duration: '1h30', price: 25, desc: 'Aplicação de esmalte em gel premium com secagem na cabine LED. Brilho duradouro por semanas sem descascar.' },
-    { id: 'banho_gel', name: 'Banho de Gel', category: 'Novos & Blindagem', duration: '2h45', price: 50, desc: 'Ideal para blindar e fortalecer o crescimento das unhas naturais com camada de gel premium.' },
-    { id: 'along_f1', name: 'Alongamento Molde F1', category: 'Novos & Blindagem', duration: '3h00', price: 80, desc: 'Extensão rápida e sofisticada utilizando a técnica moderna do Molde F1.' },
-    { id: 'manut_banho', name: 'Manutenção de Banho de Gel', category: 'Manutenções', duration: '2h15', price: 40, desc: 'Manutenção periódica para repor a estrutura do gel nas unhas em crescimento.' },
-    { id: 'manut_f1', name: 'Manutenção de Molde F1', category: 'Manutenções', duration: '2h30', price: 50, desc: 'Nivelamento e reposicionamento do alongamento feito na técnica F1.' },
+    { id: 'esmaltacao_gel', name: 'Esmaltação em Gel', category: 'Novos & Blindagem', duration: '1h30', price: 20, desc: 'Aplicação de esmalte em gel premium com secagem na cabine LED. Brilho duradouro por semanas sem descascar.' },
+    { id: 'banho_gel', name: 'Banho de Gel', category: 'Novos & Blindagem', duration: '2h45', price: 20, desc: 'Ideal para blindar e fortalecer o crescimento das unhas naturais com camada de gel premium.' },
+    { id: 'along_f1', name: 'Alongamento Molde F1', category: 'Novos & Blindagem', duration: '3h00', price: 30, desc: 'Extensão rápida e sofisticada utilizando a técnica moderna do Molde F1.' },
+    { id: 'manut_banho', name: 'Manutenção de Banho de Gel', category: 'Manutenções', duration: '2h15', price: 10, desc: 'Manutenção periódica para repor a estrutura do gel nas unhas em crescimento.' },
+    { id: 'manut_f1', name: 'Manutenção de Molde F1', category: 'Manutenções', duration: '2h30', price: 20, desc: 'Nivelamento e reposicionamento do alongamento feito na técnica F1.' },
     { id: 'remocao', name: 'Remoção de Gel / Alongamento', category: 'Remoções e Extras', duration: '1h00', price: 15, desc: 'Retirada segura do produto sem danificar a base da unha natural.' },
     { id: 'conserto', name: 'Conserto de Unha Avulsa', category: 'Remoções e Extras', duration: '0h30', price: 5, desc: 'Reparação de emergência para uma unha partida ou danificada.' }
   ];
@@ -136,7 +136,7 @@ export default function App() {
       return app;
     });
     saveAppointmentsState(updated);
-    showToast(`Agendamento atualizado para ${newStatus}!`, "success");
+    showToast(`Agendamento updated para ${newStatus}!`, "success");
   };
 
   const handleDeleteAppointment = async (id) => {
@@ -182,7 +182,6 @@ export default function App() {
         botResponse.push({ sender: 'bot', text: 'Entendido! 🌸 Estou te redirecionando agora mesmo para o WhatsApp pessoal da Brenda para que você tire suas dúvidas direto com ela.', time: 'Agora' });
         botResponse.push({ sender: 'bot', text: 'Se a nova aba não abrir em instantes, você também pode clicar no botão de suporte abaixo:', time: 'Agora', showWhatsAppRedirect: true });
         
-        // Redirecionamento Automático com o seu número
         setTimeout(() => {
           const personalZapUrl = `https://wa.me/5567993312746?text=${encodeURIComponent("Olá, Brenda! ✨ Estava usando o seu assistente virtual no site e gostaria de tirar uma dúvida com você sobre os serviços de unhas! ❤️")}`;
           window.open(personalZapUrl, '_blank');
@@ -211,7 +210,6 @@ export default function App() {
   return (
     <div className="min-h-screen bg-[#FAF6F0] text-[#4A3F3B] flex flex-col antialiased">
       
-      {/* --- BANNER DE INFORMAÇÃO / ALERTA DE TOAST --- */}
       {toastMessage && (
         <div className="fixed top-5 left-1/2 transform -translate-x-1/2 z-50 flex items-center gap-3 px-4 py-3 rounded-full shadow-lg bg-white border border-[#E5A8A3]">
           {toastType === 'success' && <CheckCircle className="w-5 h-5 text-emerald-500" />}
@@ -221,7 +219,6 @@ export default function App() {
         </div>
       )}
 
-      {/* --- HEADER E NAVEGAÇÃO SUPERIOR --- */}
       <header className="bg-white border-b border-[#F0E6DC] py-4 px-6 sticky top-0 z-50 shadow-sm">
         <div className="max-w-6xl mx-auto flex flex-col md:flex-row justify-between items-center gap-4">
           <div className="text-center md:text-left">
@@ -257,14 +254,11 @@ export default function App() {
         </div>
       </header>
 
-      {/* --- CONTEÚDO PRINCIPAL --- */}
       <main className="flex-1 max-w-6xl w-full mx-auto p-4 md:p-6">
         
-        {/* ================= ABA: SIMULADOR DE BOT (WHATSAPP) ================= */}
         {activeTab === 'simulator' && (
           <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-start">
             
-            {/* Esquerda: GUIA DE ATENDIMENTO PARA A CLIENTE */}
             <div className="lg:col-span-5 space-y-6">
               <div className="bg-white p-6 rounded-2xl border border-[#F0E6DC] shadow-sm">
                 <span className="text-[10px] uppercase tracking-widest font-bold text-[#B57C74] bg-[#F7E6E3] px-2 py-1 rounded">Agendamento Fácil</span>
@@ -316,16 +310,13 @@ export default function App() {
               </div>
             </div>
 
-            {/* Direita: Mockup do Celular */}
             <div className="lg:col-span-7 flex justify-center">
               <div className="w-full max-w-[380px] bg-white rounded-[40px] border-[10px] border-[#4A3F3B] shadow-2xl overflow-hidden flex flex-col h-[640px] relative">
                 
-                {/* Detalhe do Celular */}
                 <div className="absolute top-0 left-1/2 transform -translate-x-1/2 h-5 w-36 bg-[#4A3F3B] rounded-b-2xl z-10 flex items-center justify-center">
                   <div className="w-12 h-1 bg-gray-600 rounded-full"></div>
                 </div>
 
-                {/* Cabeçalho do WhatsApp */}
                 <div className="bg-[#FAF6F0] border-b border-[#F0E6DC] pt-8 pb-3 px-4 flex items-center gap-3">
                   <div className="w-9 h-9 rounded-full bg-[#E5A8A3] flex items-center justify-center text-white font-bold relative shrink-0">
                     B
@@ -339,7 +330,6 @@ export default function App() {
                   </div>
                 </div>
 
-                {/* Corpo das Mensagens do Chat */}
                 <div 
                   ref={chatContainerRef}
                   className="flex-1 bg-[#FAF6F0] p-4 overflow-y-auto space-y-3 flex flex-col justify-between" 
@@ -416,7 +406,6 @@ export default function App() {
                   </div>
                 </div>
 
-                {/* Rodapé de Mensagem */}
                 <div className="bg-white p-3 border-t border-[#F0E6DC] flex gap-2 items-center">
                   <input 
                     type="text" 
@@ -439,14 +428,12 @@ export default function App() {
           </div>
         )}
 
-        {/* ================= ABA: PLATAFORMA DE AGENDAMENTO (CLIENTE) ================= */}
         {activeTab === 'booking' && (
           <div className="max-w-3xl mx-auto">
             <BookingWizard services={services} appointments={appointments} onComplete={handleCreateAppointment} />
           </div>
         )}
 
-        {/* ================= ABA: PAINEL PROFISSIONAL (ADMIN) ================= */}
         {activeTab === 'admin' && (
           <div className="max-w-4xl mx-auto space-y-6">
             
@@ -655,7 +642,7 @@ export default function App() {
         <div className="max-w-6xl mx-auto flex flex-col md:flex-row justify-between items-center gap-4 text-xs text-[#9E8B83]">
           <p>© 2026 Brenda Heredia Beauty. Todos os direitos reservados.</p>
           <div className="flex gap-4">
-            <span>Sistema Intelligent de Automação e Agendamento</span>
+            <span>Sistema Inteligente de Automação e Agendamento</span>
           </div>
         </div>
       </footer>
@@ -675,7 +662,6 @@ function BookingWizard({ services, appointments, onComplete }) {
   const [clientType, setClientType] = useState('Novata'); 
   const [notes, setNotes] = useState('');
 
-  // PEGA A DATA ATUAL EXATA DO DISPOSITIVO DO CLIENTE DE FORMA TOTALMENTE DINÂMICA
   const now = new Date();
   const [viewDate, setViewDate] = useState(new Date(now.getFullYear(), now.getMonth(), 1)); 
 
@@ -701,11 +687,10 @@ function BookingWizard({ services, appointments, onComplete }) {
     const checkDate = new Date(year, month, dayNum);
     const dayOfWeek = checkDate.getDay();
 
-    // Bloqueia domingos (0) e sábados (6)
     if (dayOfWeek === 0 || dayOfWeek === 6) return true;
 
     const pureCheck = new Date(year, month, dayNum).setHours(0,0,0,0);
-    const pureToday = new Date().setHours(0,0,0,0); // DIA ATUAL REAL E DINÂMICO
+    const pureToday = new Date().setHours(0,0,0,0); 
     
     if (pureCheck < pureToday) return true;
 
@@ -714,7 +699,6 @@ function BookingWizard({ services, appointments, onComplete }) {
       if (slotsHoje.length === 0) return true; 
     }
 
-    // Permite agendamentos até 30 dias para frente a partir do dia atual
     const maxDate = new Date();
     maxDate.setDate(maxDate.getDate() + 30);
     if (checkDate > maxDate) return true;
@@ -731,11 +715,10 @@ function BookingWizard({ services, appointments, onComplete }) {
     
     let baseSlots = [];
     
-    // REGRA DE SEXTA: Último horário rigorosamente às 15:30
     if (day === 5) { 
       baseSlots = ['08:00', '09:30', '11:00', '12:30', '14:00', '15:30'];
     } else { 
-      baseSlots = ['10:00', '11:30', '13:00', '14:30', '16:00'];
+      baseSlots = ['10:30', '12:00', '13:30', '15:00', '16:30'];
     }
 
     const timeToMins = (t) => {
@@ -752,18 +735,15 @@ function BookingWizard({ services, appointments, onComplete }) {
 
     const currentDuration = selectedService ? durToMins(selectedService.duration) : 90;
 
-    // PEGA A HORA E MINUTOS REAIS AGORA DO CELULAR DA CLIENTE
     const currentRealTime = new Date();
     const currentMins = currentRealTime.getHours() * 60 + currentRealTime.getMinutes();
     
-    // Formata a data de hoje para bater com a seleção
-    const todayStr = `${currentRealTime.getFullYear()}-${String(currentRealTime.getMonth() + 1).padStart(2, '0')}-${String(currentRealTime.getUTCDate()).padStart(2, '0')}`;
+    const todayStr = `${currentRealTime.getFullYear()}-${String(currentRealTime.getMonth() + 1).padStart(2, '0')}-${String(currentRealTime.getDate()).padStart(2, '0')}`;
 
     return baseSlots.filter((slotTime) => {
       const slotStart = timeToMins(slotTime);
       const slotEnd = slotStart + currentDuration;
 
-      // BLOQUEIO DINÂMICO DE HORÁRIOS QUE JÁ PASSARAM NO DIA DE HOJE
       if (dateStr === todayStr) {
         if (slotStart <= currentMins) return false;
       }
@@ -798,11 +778,36 @@ function BookingWizard({ services, appointments, onComplete }) {
     setStep(step - 1);
   };
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
     if (!clientName || !clientPhone) return;
 
     const dateTimeCombined = `${selectedDate}T${selectedTime}`;
+    const formattedDateForSheet = selectedDate.split('-').reverse().join('/') + ' ' + selectedTime;
+
+    // INTEGRAÇÃO BLINDADA COM O SEU LINK ATIVO GERADO DO GOOGLE MACROS
+    try {
+      const googleScriptUrl = "https://script.google.com/macros/s/AKfycbyVZDh2_57xmQtyPXZ8GlXhvyt935c-Az-KllBI1wHdf69WuiKieI1RqpXNcMAegQc7/exec";
+      
+      const payload = {
+        clientName,
+        clientPhone,
+        serviceName: selectedService.name,
+        dateTime: formattedDateForSheet,
+        price: `R$ ${selectedService.price},00`,
+        clientType,
+        notes: notes || "Sem observações"
+      };
+
+      await fetch(googleScriptUrl, {
+        method: "POST",
+        mode: "no-cors",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(payload)
+      });
+    } catch (err) {
+      console.log("Erro ao alimentar planilha via Google Script:", err);
+    }
 
     onComplete({
       clientName,
@@ -1101,7 +1106,7 @@ function BookingWizard({ services, appointments, onComplete }) {
                 <input 
                   type="tel"
                   required
-                  placeholder="Ex: (17) 99123-4567"
+                  placeholder="Ex: (67) 99123-4567"
                   value={clientPhone}
                   onChange={(e) => setClientPhone(e.target.value)}
                   className="w-full bg-white text-xs px-3.5 py-3 rounded-xl border border-[#F0E6DC] focus:outline-none focus:ring-1 focus:ring-[#E5A8A3]"
@@ -1208,11 +1213,11 @@ function BookingWizard({ services, appointments, onComplete }) {
               <p className="text-[#7D6B63]">
                 <strong>O que acontece agora?</strong>
                 <br />
-                O robô registrou o seu agendamento na agenda. A Brenda confirmará diretamente com você por mensagem de WhatsApp.
+                O robô registrou o seu agendamento na agenda e enviou os dados para a planilha da Brenda com sucesso!
               </p>
             </div>
 
-            <div className="padding-6">
+            <div className="pt-6">
               <button
                 type="button"
                 onClick={resetForm}
@@ -1227,4 +1232,4 @@ function BookingWizard({ services, appointments, onComplete }) {
       </div>
     </div>
   );
-                }
+                  }
