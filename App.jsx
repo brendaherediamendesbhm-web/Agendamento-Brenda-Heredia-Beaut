@@ -778,9 +778,43 @@ function BookingWizard({ services, appointments, onComplete }) {
     setStep(step - 1);
   };
 
-  const handleSubmit = async (e) => {
+    const handleSubmit = async (e) => {
     e.preventDefault();
     if (!clientName || !clientPhone) return;
+
+    // A URL que o Google Apps Script gerou para você (após a implantação)
+    const googleScriptUrl = "COLE_AQUI_A_URL_DO_GOOGLE_SCRIPT_QUE_VOCE_COPIOU";
+    
+    try {
+      await fetch(googleScriptUrl, {
+        method: "POST",
+        mode: "no-cors",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          clientName,
+          clientPhone,
+          serviceName: selectedService.name,
+          dateTime: selectedDate + ' ' + selectedTime,
+          price: selectedService.price,
+          clientType,
+          notes
+        })
+      });
+      console.log("Enviado com sucesso!");
+    } catch (err) {
+      console.error("Erro no envio:", err);
+    }
+
+    onComplete({ 
+      clientName, clientPhone, 
+      serviceName: selectedService.name, 
+      dateTime: selectedDate + 'T' + selectedTime, 
+      price: selectedService.price, 
+      notes 
+    });
+    setStep(4);
+  };
+
 
     const dateTimeCombined = `${selectedDate}T${selectedTime}`;
     const formattedDateForSheet = selectedDate.split('-').reverse().join('/') + ' ' + selectedTime;
