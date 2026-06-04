@@ -778,35 +778,46 @@ function BookingWizard({ services, appointments, onComplete }) {
     setStep(step - 1);
   };
 
-  const handleSubmit = async (e) => {
+    const handleSubmit = async (e) => {
     e.preventDefault();
     if (!clientName || !clientPhone) return;
 
     const dateTimeCombined = `${selectedDate}T${selectedTime}`;
     const formattedDateForSheet = selectedDate.split('-').reverse().join('/') + ' ' + selectedTime;
 
-    // INTEGRAÇÃO BLINDADA COM O SEU LINK ATIVO GERADO DO GOOGLE MACROS
-    try {
-      const googleScriptUrl = "https://script.google.com/macros/s/AKfycbyVZDh2_57xmQtyPXZ8GlXhvyt935c-Az-KllBI1wHdf69WuiKieI1RqpXNcMAegQc7/exec";
-      
-      const payload = {
-        clientName,
-        clientPhone,
-        serviceName: selectedService.name,
-        dateTime: formattedDateForSheet,
-        price: `R$ ${selectedService.price},00`,
-        clientType,
-        notes: notes || "Sem observações"
-      };
+    const googleScriptUrl = "https://script.google.com/macros/s/AKfycbwVkoKqFrEXGcWYUCQbE_Odsl9Z4utG4hXVWwSlqUV3-OqZVXO3smV3CpD4iRCXhT1w/exec";
+    
+    const payload = {
+      clientName,
+      clientPhone,
+      serviceName: selectedService.name,
+      dateTime: formattedDateForSheet,
+      price: `R$ ${selectedService.price},00`,
+      clientType,
+      notes: notes || "Sem observações"
+    };
 
+    try {
+      // 1. Envia para a sua Planilha do Google
       await fetch(googleScriptUrl, {
         method: "POST",
         mode: "no-cors",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(payload)
       });
+
+      // 2. Dispara o aviso para o seu Telegram
+      const telegramBotToken = "7449298375:AAF9Z-N386zExBq_Yt6PzV_3_lOd6K9qU1M";
+      const telegramChatId = "6020583192";
+      const telegramText = `💅 *Novo Agendamento!*\n\n👤 *Cliente:* ${payload.clientName}\n📱 *Contato:* ${payload.clientPhone}\n✨ *Procedimento:* ${payload.serviceName}\n📅 *Data/Hora:* ${payload.dateTime}\n💰 *Valor:* ${payload.price}\n📝 *Obs:* ${payload.notes}`;
+      
+      await fetch(`https://api.telegram.org/bot${telegramBotToken}/sendMessage`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ chat_id: telegramChatId, text: telegramText, parse_mode: "Markdown" })
+      });
     } catch (err) {
-      console.log("Erro ao alimentar planilha via Google Script:", err);
+      console.log("Erro na integração:", err);
     }
 
     onComplete({
@@ -822,6 +833,7 @@ function BookingWizard({ services, appointments, onComplete }) {
 
     setStep(4);
   };
+
 
   const resetForm = () => {
     setStep(1);
