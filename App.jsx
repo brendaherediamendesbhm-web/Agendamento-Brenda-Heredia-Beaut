@@ -75,13 +75,13 @@ export default function App() {
   const [showPassword, setShowPassword] = useState(false);
   const [loginError, setLoginError] = useState(false); 
 
-  // Lista de serviços oferecidos com os valores promocionais mínimos
+  // LISTA DE SERVIÇOS ATUALIZADA COM VALORES DE MODELO SOLICITADOS
   const services = [
-    { id: 'esmaltacao_gel', name: 'Esmaltação em Gel', category: 'Novos & Blindagem', duration: '1h30', price: 25, desc: 'Aplicação de esmalte em gel premium com secagem na cabine LED. Brilho duradouro por semanas sem descascar.' },
-    { id: 'banho_gel', name: 'Banho de Gel', category: 'Novos & Blindagem', duration: '2h45', price: 50, desc: 'Ideal para blindar e fortalecer o crescimento das unhas naturais com camada de gel premium.' },
-    { id: 'along_f1', name: 'Alongamento Molde F1', category: 'Novos & Blindagem', duration: '3h00', price: 80, desc: 'Extensão rápida e sofisticada utilizando a técnica moderna do Molde F1.' },
-    { id: 'manut_banho', name: 'Manutenção de Banho de Gel', category: 'Manutenções', duration: '2h15', price: 40, desc: 'Manutenção periódica para repor a estrutura do gel nas unhas em crescimento.' },
-    { id: 'manut_f1', name: 'Manutenção de Molde F1', category: 'Manutenções', duration: '2h30', price: 50, desc: 'Nivelamento e reposicionamento do alongamento feito na técnica F1.' },
+    { id: 'esmaltacao_gel', name: 'Esmaltação em Gel', category: 'Novos & Blindagem', duration: '1h30', price: 20, desc: 'Aplicação de esmalte em gel premium com secagem na cabine LED. Brilho duradouro por semanas sem descascar.' },
+    { id: 'banho_gel', name: 'Banho de Gel', category: 'Novos & Blindagem', duration: '2h45', price: 20, desc: 'Ideal para blindar e fortalecer o crescimento das unhas naturais com camada de gel premium.' },
+    { id: 'along_f1', name: 'Alongamento Molde F1', category: 'Novos & Blindagem', duration: '3h00', price: 30, desc: 'Extensão rápida e sofisticada utilizando a técnica moderna do Molde F1.' },
+    { id: 'manut_banho', name: 'Manutenção de Banho de Gel', category: 'Manutenções', duration: '2h15', price: 10, desc: 'Manutenção periódica para repor a estrutura do gel nas unhas em crescimento.' },
+    { id: 'manut_f1', name: 'Manutenção de Molde F1', category: 'Manutenções', duration: '2h30', price: 20, desc: 'Nivelamento e reposicionamento do alongamento feito na técnica F1.' },
     { id: 'remocao', name: 'Remoção de Gel / Alongamento', category: 'Remoções e Extras', duration: '1h00', price: 15, desc: 'Retirada segura do produto sem danificar a base da unha natural.' },
     { id: 'conserto', name: 'Conserto de Unha Avulsa', category: 'Remoções e Extras', duration: '0h30', price: 5, desc: 'Reparação de emergência para uma unha partida ou danificada.' }
   ];
@@ -136,7 +136,7 @@ export default function App() {
       return app;
     });
     saveAppointmentsState(updated);
-    showToast(`Agendamento atualizado para ${newStatus}!`, "success");
+    showToast(`Agendamento updated para ${newStatus}!`, "success");
   };
 
   const handleDeleteAppointment = async (id) => {
@@ -642,7 +642,7 @@ export default function App() {
         <div className="max-w-6xl mx-auto flex flex-col md:flex-row justify-between items-center gap-4 text-xs text-[#9E8B83]">
           <p>© 2026 Brenda Heredia Beauty. Todos os direitos reservados.</p>
           <div className="flex gap-4">
-            <span>Sistema Intelligent de Automação e Agendamento</span>
+            <span>Sistema Inteligente de Automação e Agendamento</span>
           </div>
         </div>
       </footer>
@@ -785,21 +785,28 @@ function BookingWizard({ services, appointments, onComplete }) {
     const dateTimeCombined = `${selectedDate}T${selectedTime}`;
     const formattedDateForSheet = selectedDate.split('-').reverse().join('/') + ' ' + selectedTime;
 
-    // ENVIA OS DADOS DIRETO PARA A SUA PLANILHA SEM PRECISAR DO SCRIPT DO GOOGLE!
+    // INTEGRAÇÃO BLINDADA COM O SEU LINK ATIVO GERADO DO GOOGLE MACROS
     try {
-      const formDatabaseUrl = "https://docs.google.com/forms/d/e/1FAIpQLScsY0_C-x_B2l0-mQW_WzYhHkC9Y8zE_WzYhHkC9Y8zE_WzYg/formResponse";
-      const formData = new FormData();
-      formData.append("entry.1000001", clientName);
-      formData.append("entry.1000002", clientPhone);
-      formData.append("entry.1000003", selectedService.name);
-      formData.append("entry.1000004", formattedDateForSheet);
-      formData.append("entry.1000005", `R$ ${selectedService.price},00`);
-      formData.append("entry.1000006", clientType);
-      formData.append("entry.1000007", notes || "Sem observações");
+      const googleScriptUrl = "https://script.google.com/macros/s/AKfycbyVZDh2_57xmQtyPXZ8GlXhvyt935c-Az-KllBI1wHdf69WuiKieI1RqpXNcMAegQc7/exec";
       
-      fetch(formDatabaseUrl, { method: "POST", mode: "no-cors", body: formData });
+      const payload = {
+        clientName,
+        clientPhone,
+        serviceName: selectedService.name,
+        dateTime: formattedDateForSheet,
+        price: `R$ ${selectedService.price},00`,
+        clientType,
+        notes: notes || "Sem observações"
+      };
+
+      await fetch(googleScriptUrl, {
+        method: "POST",
+        mode: "no-cors",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(payload)
+      });
     } catch (err) {
-      console.log("Erro ao alimentar planilha externa");
+      console.log("Erro ao alimentar planilha via Google Script:", err);
     }
 
     onComplete({
@@ -1029,4 +1036,200 @@ function BookingWizard({ services, appointments, onComplete }) {
                       </button>
                     ))}
                     {getAvailableTimeSlots(selectedDate).length === 0 && (
-                      <div className="col-span-2 p-4 text-center border border-[#FAF6F0] rounded-xl bg-rose-
+                      <div className="col-span-2 p-4 text-center border border-[#FAF6F0] rounded-xl bg-rose-50/50">
+                        <AlertCircle className="w-5 h-5 text-rose-400 mx-auto" />
+                        <p className="text-xs text-rose-700 mt-2 font-medium">Não há horários livres com folga suficiente para este dia ou os horários de hoje já passaram.</p>
+                      </div>
+                    )}
+                  </div>
+                ) : (
+                  <div className="h-44 rounded-xl border border-[#F0E6DC] border-dashed flex flex-col items-center justify-center p-4 text-center bg-[#FAF6F0]/20">
+                    <CalendarIcon className="w-8 h-8 text-[#A6948E] opacity-50" />
+                    <p className="text-xs text-[#9E8B83] mt-2">Por favor, selecione primeiro um dia no calendário mensal para carregar os horários livres.</p>
+                  </div>
+                )}
+              </div>
+
+            </div>
+
+            <div className="pt-6 border-t border-[#F0E6DC] flex justify-between">
+              <button
+                onClick={handleBackStep}
+                className="px-4 py-2 text-xs font-semibold text-[#7D6B63] hover:text-[#4A3F3B]"
+              >
+                Voltar
+              </button>
+              
+              <button
+                disabled={!selectedDate || !selectedTime}
+                onClick={handleNextStep}
+                className={`px-6 py-2.5 rounded-xl text-xs font-bold uppercase tracking-wider ${
+                  selectedDate && selectedTime 
+                    ? 'bg-[#E5A8A3] text-white hover:bg-[#DCA19C]' 
+                    : 'bg-gray-100 text-gray-400 cursor-not-allowed'
+                }`}
+              >
+                Confirmar Dados de Contato
+                <ChevronRight className="w-4 h-4" />
+              </button>
+            </div>
+          </div>
+        )}
+
+        {step === 3 && (
+          <form onSubmit={handleSubmit} className="space-y-6">
+            <div className="text-center max-w-md mx-auto">
+              <h3 className="text-xl font-bold font-serif-elegant text-[#4A3F3B]">Só precisamos do seu contato!</h3>
+              <p className="text-xs text-[#9E8B83] mt-1">Preencha o seu nome e celular para podermos enviar o lembrete de confirmação de segurança.</p>
+            </div>
+
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              
+              <div className="space-y-1.5">
+                <label className="text-[10px] font-bold text-[#9E8B83] uppercase tracking-wider flex items-center gap-1">
+                  <User className="w-3.5 h-3.5 text-[#B57C74]" /> Nome Completo
+                </label>
+                <input 
+                  type="text"
+                  required
+                  placeholder="Ex: Ana Souza"
+                  value={clientName}
+                  onChange={(e) => setClientName(e.target.value)}
+                  className="w-full bg-white text-xs px-3.5 py-3 rounded-xl border border-[#F0E6DC] focus:outline-none focus:ring-1 focus:ring-[#E5A8A3]"
+                />
+              </div>
+
+              <div className="space-y-1.5">
+                <label className="text-[10px] font-bold text-[#9E8B83] uppercase tracking-wider flex items-center gap-1">
+                  <Smartphone className="w-3.5 h-3.5 text-[#B57C74]" /> Celular (WhatsApp)
+                </label>
+                <input 
+                  type="tel"
+                  required
+                  placeholder="Ex: (67) 99123-4567"
+                  value={clientPhone}
+                  onChange={(e) => setClientPhone(e.target.value)}
+                  className="w-full bg-white text-xs px-3.5 py-3 rounded-xl border border-[#F0E6DC] focus:outline-none focus:ring-1 focus:ring-[#E5A8A3]"
+                />
+              </div>
+
+              <div className="space-y-1.5 md:col-span-2">
+                <label className="text-[10px] font-bold text-[#9E8B83] uppercase tracking-wider">
+                  Já é nossa cliente de Alongamento?
+                </label>
+                <div className="grid grid-cols-2 gap-3">
+                  <button
+                    type="button"
+                    onClick={() => setClientType('Novata')}
+                    className={`p-3 rounded-xl border text-center text-xs font-semibold ${
+                      clientType === 'Novata'
+                        ? 'border-[#E5A8A3] bg-[#FCF8F5] text-[#B57C74]'
+                        : 'border-[#F0E6DC] bg-white hover:border-[#E5A8A3]'
+                    }`}
+                  >
+                    🌸 Não, primeira vez (Novata)
+                  </button>
+                  <button
+                    type="button"
+                    onClick={() => setClientType('Veterana')}
+                    className={`p-3 rounded-xl border text-center text-xs font-semibold ${
+                      clientType === 'Veterana'
+                        ? 'border-[#E5A8A3] bg-[#FCF8F5] text-[#B57C74]'
+                        : 'border-[#F0E6DC] bg-white hover:border-[#E5A8A3]'
+                    }`}
+                  >
+                    👑 Sim, sou cliente (Veterana)
+                  </button>
+                </div>
+              </div>
+
+              <div className="space-y-1.5 md:col-span-2">
+                <label className="text-[10px] font-bold text-[#9E8B83] uppercase tracking-wider">
+                  Observações / Preferência de Decoração (Opcional)
+                </label>
+                <textarea 
+                  rows="2"
+                  placeholder="Diga se quer alguma cor específica, unha decorada, ou se tem alguma unha quebrada."
+                  value={notes}
+                  onChange={(e) => setNotes(e.target.value)}
+                  className="w-full bg-white text-xs p-3 rounded-xl border border-[#F0E6DC] focus:outline-none focus:ring-1 focus:ring-[#E5A8A3]"
+                />
+              </div>
+
+            </div>
+
+            <div className="bg-[#FAF6F0] p-4 rounded-xl border border-[#EBE0D5] text-xs space-y-2">
+              <h4 className="font-bold text-[#4A3F3B] border-b border-[#EBE0D5] pb-1.5 mb-1.5 uppercase tracking-widest text-[9px] text-[#B57C74]">Resumo do Agendamento</h4>
+              <div className="flex justify-between">
+                <span className="text-[#7D6B63]">Serviço de Unhas:</span>
+                <span className="font-bold text-[#4A3F3B]">{selectedService?.name}</span>
+              </div>
+              <div className="flex justify-between">
+                <span className="text-[#7D6B63]">Duração Estimada:</span>
+                <span className="font-semibold text-[#4A3F3B]">{selectedService?.duration}</span>
+              </div>
+              <div className="flex justify-between">
+                <span className="text-[#7D6B63]">Data / Hora Reservada:</span>
+                <span className="font-bold text-[#4A3F3B]">{selectedDate?.split('-').reverse().join('/')} às {selectedTime}</span>
+              </div>
+              <div className="flex justify-between border-t border-[#EBE0D5] pt-1.5 mt-1.5 font-bold">
+                <span className="text-[#8C6D62]">Total Previsto:</span>
+                <span className="text-sm text-[#B57C74]">R$ {selectedService?.price},00</span>
+              </div>
+            </div>
+
+            <div className="pt-4 border-t border-[#F0E6DC] flex justify-between">
+              <button
+                type="button"
+                onClick={handleBackStep}
+                className="px-4 py-2 text-xs font-semibold text-[#7D6B63] hover:text-[#4A3F3B]"
+              >
+                Voltar
+              </button>
+              
+              <button
+                type="submit"
+                className="bg-[#E5A8A3] hover:bg-[#DCA19C] text-white px-6 py-2.5 rounded-xl text-xs font-bold uppercase tracking-wider flex items-center gap-1.5"
+              >
+                Efetuar Agendamento
+                <CheckCircle className="w-4 h-4" />
+              </button>
+            </div>
+          </form>
+        )}
+
+        {step === 4 && (
+          <div className="py-8 text-center space-y-6">
+            <div className="w-16 h-16 bg-[#F7E6E3] rounded-full flex items-center justify-center mx-auto text-[#B57C74] animate-bounce">
+              <Check className="w-8 h-8" />
+            </div>
+
+            <div className="space-y-2 max-w-md mx-auto">
+              <h3 className="text-2xl font-bold font-serif-elegant text-[#4A3F3B]">Agendado com Sucesso! 💅</h3>
+              <p className="text-xs text-[#7D6B63]">Muito obrigada, <strong>{clientName}</strong>. A sua vaga exclusiva está garantida para o dia <strong>{selectedDate?.split('-').reverse().join('/')}</strong> às <strong>{selectedTime}</strong>.</p>
+            </div>
+
+            <div className="bg-[#FAF6F0] p-4 rounded-xl border border-[#EBE0D5] text-xs max-sm mx-auto space-y-2">
+              <p className="text-[#7D6B63]">
+                <strong>O que acontece agora?</strong>
+                <br />
+                O robô registrou o seu agendamento na agenda e enviou os dados para a planilha da Brenda com sucesso!
+              </p>
+            </div>
+
+            <div className="pt-6">
+              <button
+                type="button"
+                onClick={resetForm}
+                className="bg-white hover:bg-[#FAF6F0] text-[#B57C74] border border-[#E5A8A3] px-6 py-2.5 rounded-xl text-xs font-bold uppercase tracking-wider"
+              >
+                Fazer Novo Agendamento
+              </button>
+            </div>
+          </div>
+        )}
+
+      </div>
+    </div>
+  );
+}
