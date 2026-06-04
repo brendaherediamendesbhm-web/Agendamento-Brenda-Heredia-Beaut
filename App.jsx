@@ -796,16 +796,20 @@ function BookingWizard({ services, appointments, onComplete }) {
     };
 
     try {
-      // Envia direto para o seu link atualizado do Google Script
+        try {
       await fetch("https://script.google.com/macros/s/AKfycby5r7CrwWuH_2HsJBg_iN1Sn4pLRToRk5K79xuBo3nhUsodgqh6SCmgpy6oA95VaZ95/exec", {
         method: "POST",
         mode: "no-cors",
-        headers: { "Content-Type": "application/json" },
+        headers: {
+          "Content-Type": "application/json"
+        },
         body: JSON.stringify(payload)
       });
+      console.log("Dados enviados com sucesso!");
     } catch (err) {
       console.log("Erro na integração:", err);
     }
+
 
     onComplete({
       clientName,
