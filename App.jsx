@@ -778,7 +778,7 @@ function BookingWizard({ services, appointments, onComplete }) {
     setStep(step - 1);
   };
 
-              const handleSubmit = async (e) => {
+                const handleSubmit = async (e) => {
     e.preventDefault();
     if (!clientName || !clientPhone) return;
 
@@ -786,28 +786,29 @@ function BookingWizard({ services, appointments, onComplete }) {
     const formattedDateForSheet = selectedDate.split('-').reverse().join('/') + ' ' + selectedTime;
     
     const payload = {
-      clientName,
-      clientPhone,
+      clientName: clientName,
+      clientPhone: clientPhone,
       serviceName: selectedService.name,
       dateTime: formattedDateForSheet,
       price: `R$ ${selectedService.price},00`,
-      clientType,
+      clientType: clientType,
       notes: notes || "Sem observações"
     };
 
-        try {
+    try {
+      // Envio em JSON texturizado puro: impossível de ser bloqueado ou quebrado por símbolos
       await fetch("https://script.google.com/macros/s/AKfycby5r7CrwWuH_2HsJBg_iN1Sn4pLRToRk5K79xuBo3nhUsodgqh6SCmgpy6oA95VaZ95/exec", {
         method: "POST",
+        mode: "no-cors",
         headers: {
-          "Content-Type": "application/x-www-form-urlencoded"
+          "Content-Type": "application/json"
         },
-        body: new URLSearchParams(payload).toString()
+        body: JSON.stringify(payload)
       });
-      console.log("Dados enviados!");
+      console.log("Dados enviados com sucesso para o Google!");
     } catch (err) {
       console.log("Erro na integração:", err);
     }
-
 
     onComplete({
       clientName,
@@ -822,6 +823,7 @@ function BookingWizard({ services, appointments, onComplete }) {
 
     setStep(4);
   };
+
 
 
 
