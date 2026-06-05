@@ -795,20 +795,19 @@ function BookingWizard({ services, appointments, onComplete }) {
       notes: notes || "Sem observações"
     };
 
-    try {
+        try {
       await fetch("https://script.google.com/macros/s/AKfycby5r7CrwWuH_2HsJBg_iN1Sn4pLRToRk5K79xuBo3nhUsodgqh6SCmgpy6oA95VaZ95/exec", {
-
         method: "POST",
-        mode: "no-cors",
         headers: {
-          "Content-Type": "application/json"
+          "Content-Type": "application/x-www-form-urlencoded"
         },
-        body: JSON.stringify(payload)
+        body: new URLSearchParams(payload).toString()
       });
       console.log("Dados enviados!");
     } catch (err) {
       console.log("Erro na integração:", err);
     }
+
 
     onComplete({
       clientName,
