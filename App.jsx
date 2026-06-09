@@ -18,7 +18,9 @@ import {
   Lock,
   Eye,
   EyeOff,
-  ChevronLeft
+  ChevronLeft,
+  Ban,
+  CalendarDays
 } from 'lucide-react';
 
 // --- FONTES & ESTILOS GLOBAIS ---
@@ -66,6 +68,7 @@ export default function App() {
   // --- ESTADOS GLOBAIS ---
   const [activeTab, setActiveTab] = useState('simulator'); 
   const [appointments, setAppointments] = useState([]);
+  const [blockedSlots, setBlockedSlots] = useState([]); // Lista de dias/horários de folga bloqueados
   const [toastMessage, setToastMessage] = useState(null);
   const [toastType, setToastType] = useState('success'); 
 
@@ -75,7 +78,14 @@ export default function App() {
   const [showPassword, setShowPassword] = useState(false);
   const [loginError, setLoginError] = useState(false); 
 
-  // LISTA DE SERVIÇOS ATUALIZADA COM VALORES DE MODELO SOLICITADOS
+  // Estado de controle para o formulário de bloqueio (Pausa/Folga)
+  const [blockConfig, setBlockConfig] = useState({
+    data: '',
+    horario: '',
+    tipo: 'dia_todo' // 'dia_todo' ou 'horario_especifico'
+  });
+
+  // LISTA DE SERVIÇOS ATUALIZADA COM SEUS VALORES REAIS
   const services = [
     { id: 'esmaltacao_gel', name: 'Esmaltação em Gel', category: 'Novos & Blindagem', duration: '1h30', price: 20, desc: 'Aplicação de esmalte em gel premium com secagem na cabine LED. Brilho duradouro por semanas sem descascar.' },
     { id: 'banho_gel', name: 'Banho de Gel', category: 'Novos & Blindagem', duration: '2h45', price: 20, desc: 'Ideal para blindar e fortalecer o crescimento das unhas naturais com camada de gel premium.' },
@@ -86,21 +96,22 @@ export default function App() {
     { id: 'conserto', name: 'Conserto de Unha Avulsa', category: 'Remoções e Extras', duration: '0h30', price: 5, desc: 'Reparação de emergência para uma unha partida ou danificada.' }
   ];
 
+  // Base padrão de horários de atendimento do Studio
+  const HORARIOS_PADRAO = ['08:00', '09:30', '11:00', '12:30', '14:00', '15:30', '16:30'];
+
   // --- LÓGICA DE ARMAZENAMENTO LOCAL ---
   useEffect(() => {
     loadLocalData();
   }, []);
 
   const loadLocalData = () => {
-    const saved = localStorage.getItem('dotto_appointments');
-    if (saved) {
-      try {
-        setAppointments(JSON.parse(saved));
-      } catch (e) {
-        setAppointments([]);
-      }
-    } else {
-      setAppointments([]); 
+    const savedApps = localStorage.getItem('dotto_appointments');
+    const savedBlocks = localStorage.getItem('dotto_blocked_slots');
+    if (savedApps) {
+      try { setAppointments(JSON.parse(savedApps)); } catch (e) { setAppointments([]); }
+    }
+    if (savedBlocks) {
+      try { setBlockedSlots(JSON.parse(savedBlocks)); } catch (e) { setBlockedSlots([]); }
     }
   };
 
@@ -109,12 +120,15 @@ export default function App() {
     localStorage.setItem('dotto_appointments', JSON.stringify(newList));
   };
 
+  const saveBlockedState = (newList) => {
+    setBlockedSlots(newList);
+    localStorage.setItem('dotto_blocked_slots', JSON.stringify(newList));
+  };
+
   const showToast = (message, type = 'success') => {
     setToastMessage(message);
     setToastType(type);
-    setTimeout(() => {
-      setToastMessage(null);
-    }, 4500);
+    setTimeout(() => { setToastMessage(null); }, 4500);
   };
 
   const handleCreateAppointment = async (appointmentData) => {
@@ -123,7 +137,7 @@ export default function App() {
       status: 'Pendente',
       createdAt: new Date().toISOString()
     };
-    const localList = [...appointments, { id: 'local-' + Date.now(), ...newAppointment }];
+    const localList = [newAppointment, ...appointments];
     saveAppointmentsState(localList);
     showToast("Agendamento realizado com sucesso!", "success");
   };
@@ -136,13 +150,40 @@ export default function App() {
       return app;
     });
     saveAppointmentsState(updated);
-    showToast(`Agendamento updated para ${newStatus}!`, "success");
+    showToast(`Agendamento atualizado para ${newStatus}!`, "success");
   };
 
   const handleDeleteAppointment = async (id) => {
     const filtered = appointments.filter(app => app.id !== id);
     saveAppointmentsState(filtered);
     showToast("Agendamento removido.", "info");
+  };
+
+  // --- CONTROLE DE BLOQUEIOS (ADMIN) ---
+  const handleAddBlock = (e) => {
+    e.preventDefault();
+    if (!blockConfig.data) return showToast('Selecione uma data para bloquear!', 'error');
+    if (blockConfig.tipo === 'horario_especifico' && !blockConfig.horario) {
+      return showToast('Selecione o horário para bloquear!', 'error');
+    }
+
+    const newBlock = {
+      id: 'block-' + Date.now(),
+      data: blockConfig.data,
+      horario: blockConfig.tipo === 'dia_todo' ? '' : blockConfig.horario,
+      tipo: blockConfig.tipo
+    };
+
+    const updatedBlocks = [...blockedSlots, newBlock];
+    saveBlockedState(updatedBlocks);
+    setBlockConfig({ data: '', horario: '', tipo: 'dia_todo' });
+    showToast('Agenda atualizada! Horário bloqueado para folga.', 'success');
+  };
+
+  const handleRemoveBlock = (id) => {
+    const filtered = blockedSlots.filter(b => b.id !== id);
+    saveBlockedState(filtered);
+    showToast('Bloqueio removido! Horário liberado para as clientes.', 'info');
   };
 
   // --- CONTROLE DO SIMULADOR ---
@@ -430,7 +471,7 @@ export default function App() {
 
         {activeTab === 'booking' && (
           <div className="max-w-3xl mx-auto">
-            <BookingWizard services={services} appointments={appointments} onComplete={handleCreateAppointment} />
+            <BookingWizard services={services} appointments={appointments} blockedSlots={blockedSlots} onComplete={handleCreateAppointment} />
           </div>
         )}
 
@@ -490,7 +531,7 @@ export default function App() {
                 <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4 bg-white p-6 rounded-2xl border border-[#F0E6DC] shadow-xs">
                   <div>
                     <h2 className="text-xl font-bold font-serif-elegant text-[#4A3F3B]">Gestão de Agendamentos - Brenda Heredia</h2>
-                    <p className="text-xs text-[#7D6B63] mt-1">Consulte os horários agendados pelas clientes e envie os lembretes de confirmação rápidos.</p>
+                    <p className="text-xs text-[#7D6B63] mt-1">Consulte os horários solicitados, controle suas folgas e administre sua agenda diária.</p>
                   </div>
                   
                   <button 
@@ -505,6 +546,104 @@ export default function App() {
                   </button>
                 </div>
 
+                {/* --- SEÇÃO DE GERENCIAMENTO DE HORÁRIOS E DIAS (FOLGAS) --- */}
+                <div className="grid grid-cols-1 md:grid-cols-12 gap-6 items-start">
+                  
+                  {/* Formulário para Bloquear Agenda */}
+                  <div className="bg-white p-6 rounded-2xl border border-[#F0E6DC] shadow-xs md:col-span-5 space-y-4">
+                    <div className="flex items-center gap-2 text-[#8C6D62] font-bold text-xs uppercase tracking-wider border-b border-[#FAF6F0] pb-2">
+                      <CalendarDays className="w-4 h-4 text-[#E5A8A3]" />
+                      <h4>Gerenciar Agenda (Bloquear Horário/Folga)</h4>
+                    </div>
+
+                    <form onSubmit={handleAddBlock} className="space-y-4">
+                      <div>
+                        <label className="block text-[10px] font-bold text-[#9E8B83] uppercase tracking-wider mb-1">Tipo de Bloqueio</label>
+                        <div className="grid grid-cols-2 gap-2">
+                          <button
+                            type="button"
+                            onClick={() => setBlockConfig({ ...blockConfig, tipo: 'dia_todo', horario: '' })}
+                            className={`py-2 px-3 text-xs rounded-lg font-semibold border transition-all ${blockConfig.tipo === 'dia_todo' ? 'bg-[#E5A8A3] border-[#E5A8A3] text-white shadow-xs' : 'bg-[#FAF6F0] border-[#EBE0D5] text-[#7D6B63]'}`}
+                          >
+                            Dia Todo (Folga)
+                          </button>
+                          <button
+                            type="button"
+                            onClick={() => setBlockConfig({ ...blockConfig, tipo: 'horario_especifico' })}
+                            className={`py-2 px-3 text-xs rounded-lg font-semibold border transition-all ${blockConfig.tipo === 'horario_especifico' ? 'bg-[#E5A8A3] border-[#E5A8A3] text-white shadow-xs' : 'bg-[#FAF6F0] border-[#EBE0D5] text-[#7D6B63]'}`}
+                          >
+                            Hora Específica
+                          </button>
+                        </div>
+                      </div>
+
+                      <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                        <div>
+                          <label className="block text-[10px] font-bold text-[#9E8B83] uppercase tracking-wider mb-1">Escolha a Data</label>
+                          <input 
+                            type="date"
+                            value={blockConfig.data}
+                            onChange={(e) => setBlockConfig({ ...blockConfig, data: e.target.value })}
+                            className="w-full bg-[#FAF6F0] text-xs px-3 py-2 rounded-xl border border-[#F0E6DC] focus:outline-none"
+                          />
+                        </div>
+
+                        {blockConfig.tipo === 'horario_especifico' && (
+                          <div>
+                            <label className="block text-[10px] font-bold text-[#9E8B83] uppercase tracking-wider mb-1">Horário</label>
+                            <select
+                              value={blockConfig.horario}
+                              onChange={(e) => setBlockConfig({ ...blockConfig, horario: e.target.value })}
+                              className="w-full bg-[#FAF6F0] text-xs px-2 py-2 rounded-xl border border-[#F0E6DC] focus:outline-none"
+                            >
+                              <option value="">Escolha...</option>
+                              {HORARIOS_PADRAO.map(h => <option key={h} value={h}>{h}</option>)}
+                            </select>
+                          </div>
+                        )}
+                      </div>
+
+                      <button type="submit" className="w-full bg-[#4A3F3B] hover:bg-[#5E514B] text-white py-2.5 rounded-xl text-xs font-bold uppercase tracking-wider transition-all">
+                        Salvar Pausa / Bloqueio
+                      </button>
+                    </form>
+                  </div>
+
+                  {/* Lista de Bloqueios e Folgas Ativos */}
+                  <div className="bg-white p-6 rounded-2xl border border-[#F0E6DC] shadow-xs md:col-span-7 space-y-3">
+                    <div className="text-[#4A3F3B] font-bold text-xs uppercase tracking-wider pb-1">
+                      <h4>Folgas e Bloqueios Ativos</h4>
+                    </div>
+
+                    {blockedSlots.length === 0 ? (
+                      <div className="text-center py-10 border border-dashed border-[#F0E6DC] rounded-xl bg-[#FAF6F0]/20">
+                        <Smile className="w-8 h-8 text-[#E5A8A3] mx-auto opacity-60" />
+                        <p className="text-xs text-[#9E8B83] mt-2 italic">Nenhuma folga ou horário bloqueado.</p>
+                      </div>
+                    ) : (
+                      <div className="space-y-2 max-h-[160px] overflow-y-auto pr-1">
+                        {blockedSlots.map((bloqueio) => (
+                          <div key={bloqueio.id} className="flex justify-between items-center bg-[#FAF6F0] p-3 rounded-xl border border-[#F0E6DC] text-xs">
+                            <div className="flex items-center gap-2 text-[#4A3F3B]">
+                              <Ban className="w-3.5 h-3.5 text-rose-500" />
+                              <span className="font-bold">{bloqueio.data.split('-').reverse().join('/')}</span>
+                              <span className="text-[#7D6B63]">{bloqueio.tipo === 'dia_todo' ? '(Dia Completo de Folga)' : ` às ${bloqueio.horario}`}</span>
+                            </div>
+                            <button
+                              onClick={() => handleRemoveBlock(bloqueio.id)}
+                              className="text-[10px] font-bold text-rose-500 hover:underline px-2 py-1 rounded hover:bg-rose-50"
+                            >
+                              Liberar Horário
+                            </button>
+                          </div>
+                        ))}
+                      </div>
+                    )}
+                  </div>
+
+                </div>
+
+                {/* Métricas e Faturamento */}
                 <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
                   <div className="bg-white p-4 rounded-xl border border-[#F0E6DC] flex items-center justify-between shadow-xs">
                     <div>
@@ -541,9 +680,10 @@ export default function App() {
                   </div>
                 </div>
 
+                {/* Próximos Atendimentos */}
                 <div className="bg-white rounded-2xl border border-[#F0E6DC] shadow-xs overflow-hidden">
                   <div className="px-6 py-4 border-b border-[#F0E6DC] flex justify-between items-center bg-[#FAF6F0]/50">
-                    <h4 className="text-xs font-bold text-[#4A3F3B] uppercase tracking-wider">Próximos Atendimentos</h4>
+                    <h4 className="text-xs font-bold text-[#4A3F3B] uppercase tracking-wider">Próximos Atendimentos Solicitados</h4>
                     <span className="text-[10px] text-[#9E8B83] bg-white px-2 py-1 rounded border border-[#F0E6DC] font-medium">Ordenado por data</span>
                   </div>
 
@@ -652,7 +792,7 @@ export default function App() {
 }
 
 // ================= COMPONENTE DE PROCESSO: AGENDAMENTO ONLINE (WIZARD) =================
-function BookingWizard({ services, appointments, onComplete }) {
+function BookingWizard({ services, appointments, blockedSlots, onComplete }) {
   const [step, setStep] = useState(1); 
   const [selectedService, setSelectedService] = useState(null);
   const [selectedDate, setSelectedDate] = useState('');
@@ -683,10 +823,16 @@ function BookingWizard({ services, appointments, onComplete }) {
     if (!dayNum) return true;
     const year = viewDate.getFullYear();
     const month = viewDate.getMonth();
+    const dateValStr = `${year}-${String(month + 1).padStart(2, '0')}-${String(dayNum).padStart(2, '0')}`;
     
+    // 1. VERIFICAÇÃO SE O DIA FOI BLOQUEADO POR VOCÊ COMO FOLGA COMPLETA NO PAINEL ADMIN
+    const isDayBlockedByAdmin = blockedSlots.some(b => b.data === dateValStr && b.tipo === 'dia_todo');
+    if (isDayBlockedByAdmin) return true;
+
     const checkDate = new Date(year, month, dayNum);
     const dayOfWeek = checkDate.getDay();
 
+    // Bloqueia domingos e sábados (ajuste caso atenda aos sábados)
     if (dayOfWeek === 0 || dayOfWeek === 6) return true;
 
     const pureCheck = new Date(year, month, dayNum).setHours(0,0,0,0);
@@ -695,7 +841,7 @@ function BookingWizard({ services, appointments, onComplete }) {
     if (pureCheck < pureToday) return true;
 
     if (pureCheck === pureToday) {
-      const slotsHoje = getAvailableTimeSlots(`${year}-${String(month + 1).padStart(2, '0')}-${String(dayNum).padStart(2, '0')}`, true);
+      const slotsHoje = getAvailableTimeSlots(dateValStr, true);
       if (slotsHoje.length === 0) return true; 
     }
 
@@ -714,7 +860,6 @@ function BookingWizard({ services, appointments, onComplete }) {
     const day = date.getDay(); 
     
     let baseSlots = [];
-    
     if (day === 5) { 
       baseSlots = ['08:00', '09:30', '11:00', '12:30', '14:00', '15:30'];
     } else { 
@@ -734,20 +879,22 @@ function BookingWizard({ services, appointments, onComplete }) {
     };
 
     const currentDuration = selectedService ? durToMins(selectedService.duration) : 90;
-
     const currentRealTime = new Date();
     const currentMins = currentRealTime.getHours() * 60 + currentRealTime.getMinutes();
-    
     const todayStr = `${currentRealTime.getFullYear()}-${String(currentRealTime.getMonth() + 1).padStart(2, '0')}-${String(currentRealTime.getDate()).padStart(2, '0')}`;
 
     return baseSlots.filter((slotTime) => {
       const slotStart = timeToMins(slotTime);
       const slotEnd = slotStart + currentDuration;
 
-      if (dateStr === todayStr) {
-        if (slotStart <= currentMins) return false;
-      }
+      // Impede horários passados caso seja o dia de hoje
+      if (dateStr === todayStr && slotStart <= currentMins) return false;
 
+      // 2. VERIFICAÇÃO SE O HORÁRIO ESPECÍFICO DESTE DIA FOI BLOQUEADO POR VOCÊ NO PAINEL ADMIN
+      const isTimeSlotBlockedByAdmin = blockedSlots.some(b => b.data === dateStr && b.tipo === 'horario_especifico' && b.horario === slotTime);
+      if (isTimeSlotBlockedByAdmin) return false;
+
+      // Verifica choque de horário com clientes já agendadas
       const isOverlapping = appointments && appointments.some((app) => {
         const appDate = app.dateTime.split('T')[0];
         if (appDate !== dateStr) return false;
@@ -760,7 +907,6 @@ function BookingWizard({ services, appointments, onComplete }) {
         const existingDuration = existingService ? durToMins(existingService.duration) : 120; 
 
         const appEnd = appStart + existingDuration;
-
         return (slotStart < appEnd && slotEnd > appStart);
       });
 
@@ -778,7 +924,7 @@ function BookingWizard({ services, appointments, onComplete }) {
     setStep(step - 1);
   };
 
-                  const handleSubmit = async (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
     if (!clientName || !clientPhone) return;
 
@@ -796,7 +942,7 @@ function BookingWizard({ services, appointments, onComplete }) {
     };
 
     try {
-      // O site agora vai REALMENTE enviar e esperar o sinal chegar no Google
+      // Modificado para o seu Formspree pessoal definitivo - Envia dados do agendamento
       await fetch("https://formspree.io/f/mqeoqkpb", {
         method: "POST",
         mode: "no-cors",
@@ -807,8 +953,8 @@ function BookingWizard({ services, appointments, onComplete }) {
       });
       console.log("Dados enviados com sucesso!");
 
-      // SÓ MUDA DE TELA SE O ENVIO CONCLUIR
       onComplete({
+        id: 'local-' + Date.now(),
         clientName,
         clientPhone,
         clientType,
@@ -826,14 +972,6 @@ function BookingWizard({ services, appointments, onComplete }) {
       alert("Erro ao salvar agendamento. Tente novamente.");
     }
   };
-
-
-
-
-
-
-
-
 
   const resetForm = () => {
     setStep(1);
@@ -870,9 +1008,7 @@ function BookingWizard({ services, appointments, onComplete }) {
           {[1, 2, 3].map((num) => (
             <div 
               key={num} 
-              className={`w-5 h-1.5 rounded-full transition-all duration-300 ${
-                step >= num ? 'bg-[#E5A8A3]' : 'bg-[#EBE0D5]'
-              }`}
+              className={`w-5 h-1.5 rounded-full transition-all duration-300 ${step >= num ? 'bg-[#E5A8A3]' : 'bg-[#EBE0D5]'}`}
             />
           ))}
         </div>
@@ -898,17 +1034,11 @@ function BookingWizard({ services, appointments, onComplete }) {
                         <div 
                           key={service.id}
                           onClick={() => setSelectedService(service)}
-                          className={`p-4 rounded-xl border transition-all duration-200 cursor-pointer text-left flex flex-col justify-between h-36 ${
-                            selectedService?.id === service.id 
-                              ? 'border-[#E5A8A3] bg-[#FCF8F5] ring-1 ring-[#E5A8A3]' 
-                              : 'border-[#F0E6DC] bg-white'
-                          }`}
+                          className={`p-4 rounded-xl border transition-all duration-200 cursor-pointer text-left flex flex-col justify-between h-36 ${selectedService?.id === service.id ? 'border-[#E5A8A3] bg-[#FCF8F5] ring-1 ring-[#E5A8A3]' : 'border-[#F0E6DC] bg-white'}`}
                         >
                           <div>
                             <div className="flex justify-between items-start gap-2">
-                              <h5 className="text-xs font-bold text-[#4A3F3B]">
-                                {service.name}
-                              </h5>
+                              <h5 className="text-xs font-bold text-[#4A3F3B]">{service.name}</h5>
                               <span className="text-xs font-bold text-[#8C6D62]">R$ {service.price},00</span>
                             </div>
                             <p className="text-[11px] text-[#9E8B83] mt-1 line-clamp-2 leading-relaxed">{service.desc}</p>
@@ -929,11 +1059,7 @@ function BookingWizard({ services, appointments, onComplete }) {
               <button
                 disabled={!selectedService}
                 onClick={handleNextStep}
-                className={`px-6 py-2.5 rounded-xl text-xs font-bold uppercase tracking-wider ${
-                  selectedService 
-                    ? 'bg-[#E5A8A3] text-white hover:bg-[#DCA19C]' 
-                    : 'bg-gray-100 text-gray-400 cursor-not-allowed'
-                }`}
+                className={`px-6 py-2.5 rounded-xl text-xs font-bold uppercase tracking-wider flex items-center gap-1.5 ${selectedService ? 'bg-[#E5A8A3] text-white hover:bg-[#DCA19C]' : 'bg-gray-100 text-gray-400 cursor-not-allowed'}`}
               >
                 Escolher Data e Hora
                 <ChevronRight className="w-4 h-4" />
@@ -993,9 +1119,7 @@ function BookingWizard({ services, appointments, onComplete }) {
 
                   <div className="grid grid-cols-7 gap-1">
                     {getCalendarDays().map((day, idx) => {
-                      if (day === null) {
-                        return <div key={`empty-${idx}`} className="h-9"></div>;
-                      }
+                      if (day === null) return <div key={`empty-${idx}`} className="h-9"></div>;
 
                       const dateValStr = `${viewDate.getFullYear()}-${String(viewDate.getMonth() + 1).padStart(2, '0')}-${String(day).padStart(2, '0')}`;
                       const disabled = isDateDisabled(day);
@@ -1010,13 +1134,7 @@ function BookingWizard({ services, appointments, onComplete }) {
                             setSelectedDate(dateValStr);
                             setSelectedTime(''); 
                           }}
-                          className={`h-9 w-full rounded-lg text-xs font-semibold flex items-center justify-center transition-all ${
-                            isSelected 
-                              ? 'bg-[#E5A8A3] text-white font-bold shadow-xs'
-                              : disabled 
-                                ? 'text-gray-300 bg-gray-50/50 cursor-not-allowed lines-through opacity-30'
-                                : 'text-[#4A3F3B] hover:bg-[#FCF8F5] hover:text-[#B57C74] border border-[#FAF6F0]'
-                          }`}
+                          className={`h-9 w-full rounded-lg text-xs font-semibold flex items-center justify-center transition-all ${isSelected ? 'bg-[#E5A8A3] text-white font-bold shadow-xs' : disabled ? 'text-gray-300 bg-gray-50/50 cursor-not-allowed line-through opacity-30' : 'text-[#4A3F3B] hover:bg-[#FCF8F5] hover:text-[#B57C74] border border-[#FAF6F0]'}`}
                         >
                           {day}
                         </button>
@@ -1038,11 +1156,7 @@ function BookingWizard({ services, appointments, onComplete }) {
                         key={slot}
                         type="button"
                         onClick={() => setSelectedTime(slot)}
-                        className={`py-3 px-4 rounded-xl border text-center font-medium text-xs ${
-                          selectedTime === slot
-                            ? 'border-[#E5A8A3] bg-[#FCF8F5] text-[#B57C74] font-bold'
-                            : 'border-[#F0E6DC] bg-white hover:border-[#E5A8A3]'
-                        }`}
+                        className={`py-3 px-4 rounded-xl border text-center font-medium text-xs ${selectedTime === slot ? 'border-[#E5A8A3] bg-[#FCF8F5] text-[#B57C74] font-bold' : 'border-[#F0E6DC] bg-white hover:border-[#E5A8A3]'}`}
                       >
                         {slot}
                       </button>
@@ -1050,14 +1164,14 @@ function BookingWizard({ services, appointments, onComplete }) {
                     {getAvailableTimeSlots(selectedDate).length === 0 && (
                       <div className="col-span-2 p-4 text-center border border-[#FAF6F0] rounded-xl bg-rose-50/50">
                         <AlertCircle className="w-5 h-5 text-rose-400 mx-auto" />
-                        <p className="text-xs text-rose-700 mt-2 font-medium">Não há horários livres com folga suficiente para este dia ou os horários de hoje já passaram.</p>
+                        <p className="text-xs text-rose-700 mt-2 font-medium">Não há horários livres neste dia (ou foi marcado como dia de folga).</p>
                       </div>
                     )}
                   </div>
                 ) : (
                   <div className="h-44 rounded-xl border border-[#F0E6DC] border-dashed flex flex-col items-center justify-center p-4 text-center bg-[#FAF6F0]/20">
                     <CalendarIcon className="w-8 h-8 text-[#A6948E] opacity-50" />
-                    <p className="text-xs text-[#9E8B83] mt-2">Por favor, selecione primeiro um dia no calendário mensal para carregar os horários livres.</p>
+                    <p className="text-xs text-[#9E8B83] mt-2">Por favor, selecione primeiro um dia no calendário mensal para ver os horários livres.</p>
                   </div>
                 )}
               </div>
@@ -1075,11 +1189,7 @@ function BookingWizard({ services, appointments, onComplete }) {
               <button
                 disabled={!selectedDate || !selectedTime}
                 onClick={handleNextStep}
-                className={`px-6 py-2.5 rounded-xl text-xs font-bold uppercase tracking-wider ${
-                  selectedDate && selectedTime 
-                    ? 'bg-[#E5A8A3] text-white hover:bg-[#DCA19C]' 
-                    : 'bg-gray-100 text-gray-400 cursor-not-allowed'
-                }`}
+                className={`px-6 py-2.5 rounded-xl text-xs font-bold uppercase tracking-wider flex items-center gap-1.5 ${selectedDate && selectedTime ? 'bg-[#E5A8A3] text-white hover:bg-[#DCA19C]' : 'bg-gray-100 text-gray-400 cursor-not-allowed'}`}
               >
                 Confirmar Dados de Contato
                 <ChevronRight className="w-4 h-4" />
@@ -1126,29 +1236,19 @@ function BookingWizard({ services, appointments, onComplete }) {
               </div>
 
               <div className="space-y-1.5 md:col-span-2">
-                <label className="text-[10px] font-bold text-[#9E8B83] uppercase tracking-wider">
-                  Já é nossa cliente de Alongamento?
-                </label>
+                <label className="text-[10px] font-bold text-[#9E8B83] uppercase tracking-wider">Já é nossa cliente de Alongamento?</label>
                 <div className="grid grid-cols-2 gap-3">
                   <button
                     type="button"
                     onClick={() => setClientType('Novata')}
-                    className={`p-3 rounded-xl border text-center text-xs font-semibold ${
-                      clientType === 'Novata'
-                        ? 'border-[#E5A8A3] bg-[#FCF8F5] text-[#B57C74]'
-                        : 'border-[#F0E6DC] bg-white hover:border-[#E5A8A3]'
-                    }`}
+                    className={`p-3 rounded-xl border text-center text-xs font-semibold ${clientType === 'Novata' ? 'border-[#E5A8A3] bg-[#FCF8F5] text-[#B57C74]' : 'border-[#F0E6DC] bg-white hover:border-[#E5A8A3]'}`}
                   >
                     🌸 Não, primeira vez (Novata)
                   </button>
                   <button
                     type="button"
                     onClick={() => setClientType('Veterana')}
-                    className={`p-3 rounded-xl border text-center text-xs font-semibold ${
-                      clientType === 'Veterana'
-                        ? 'border-[#E5A8A3] bg-[#FCF8F5] text-[#B57C74]'
-                        : 'border-[#F0E6DC] bg-white hover:border-[#E5A8A3]'
-                    }`}
+                    className={`p-3 rounded-xl border text-center text-xs font-semibold ${clientType === 'Veterana' ? 'border-[#E5A8A3] bg-[#FCF8F5] text-[#B57C74]' : 'border-[#F0E6DC] bg-white hover:border-[#E5A8A3]'}`}
                   >
                     👑 Sim, sou cliente (Veterana)
                   </button>
@@ -1156,9 +1256,7 @@ function BookingWizard({ services, appointments, onComplete }) {
               </div>
 
               <div className="space-y-1.5 md:col-span-2">
-                <label className="text-[10px] font-bold text-[#9E8B83] uppercase tracking-wider">
-                  Observações / Preferência de Decoração (Opcional)
-                </label>
+                <label className="text-[10px] font-bold text-[#9E8B83] uppercase tracking-wider">Observações / Preferência de Decoração (Opcional)</label>
                 <textarea 
                   rows="2"
                   placeholder="Diga se quer alguma cor específica, unha decorada, ou se tem alguma unha quebrada."
@@ -1225,7 +1323,7 @@ function BookingWizard({ services, appointments, onComplete }) {
               <p className="text-[#7D6B63]">
                 <strong>O que acontece agora?</strong>
                 <br />
-                O robô registrou o seu agendamento na agenda e enviou os dados para a planilha da Brenda com sucesso!
+                O robô registrou o seu agendamento na agenda e enviou os dados para o seu painel de controle e e-mail com sucesso!
               </p>
             </div>
 
@@ -1244,4 +1342,4 @@ function BookingWizard({ services, appointments, onComplete }) {
       </div>
     </div>
   );
-                  }
+}
