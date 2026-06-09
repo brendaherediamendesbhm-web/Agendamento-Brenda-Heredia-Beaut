@@ -925,6 +925,7 @@ function BookingWizard({ services, appointments, blockedSlots, onComplete }) {
   };
 
   const handleSubmit = async (e) => {
+    const handleSubmit = async (e) => {
     e.preventDefault();
     if (!clientName || !clientPhone) return;
 
@@ -941,18 +942,37 @@ function BookingWizard({ services, appointments, blockedSlots, onComplete }) {
       notes: notes || "Sem observações"
     };
 
-    try {
-      // Modificado para o seu Formspree pessoal definitivo - Envia dados do agendamento
-      await fetch("https://formspree.io/f/mqeoqkpb", {
-        method: "POST",
-        mode: "no-cors",
-        headers: {
-          "Content-Type": "application/json"
-        },
-        body: JSON.stringify(payload)
-      });
-      console.log("Dados enviados com sucesso!");
+    // --- CONFIGURAÇÃO DO SEU TELEGRAM ILIMITADO ---
+    // COLOQUE O SEU TOKEN DO BOTFATHER AQUI DENTRO DAS ASPAS:
+    const TELEGRAM_TOKEN = "8608778817:AAHitHMcyMUmB2Z2hSzQWcSNCrnhY-08H6k"; 
+    // COLOQUE O SEU ID DO USERINFOBOT AQUI DENTRO DAS ASPAS:
+    const TELEGRAM_CHAT_ID = "1210861515"; 
 
+    // Texto lindo e organizado que vai chegar no seu celular:
+    const mensagemTelegram = `🔔 *NOVO AGENDAMENTO RECEBIDO!* 💅\n\n` +
+                             `👤 *Cliente:* ${clientName}\n` +
+                             `📱 *WhatsApp:* ${clientPhone}\n` +
+                             `👑 *Tipo:* ${clientType}\n\n` +
+                             `💅 *Serviço:* ${selectedService.name}\n` +
+                             `💰 *Valor:* R$ ${selectedService.price},00\n` +
+                             `📅 *Data/Hora:* ${formattedDateForSheet}\n\n` +
+                             `📝 *Obs:* ${notes || "Sem observações"}`;
+
+    try {
+      // ENVIANDO DIRETO PARA O TELEGRAM (100% GRÁTIS E ILIMITADO)
+      await fetch(`https://api.telegram.org/bot${TELEGRAM_TOKEN}/sendMessage`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          chat_id: TELEGRAM_CHAT_ID,
+          text: mensagemTelegram,
+          parse_mode: "Markdown" // Deixa o texto em negrito e bem organizado
+        })
+      });
+
+      console.log("Notificação enviada para o Telegram com sucesso!");
+
+      // Salva no painel interno do seu site normal
       onComplete({
         id: 'local-' + Date.now(),
         clientName,
@@ -968,10 +988,11 @@ function BookingWizard({ services, appointments, blockedSlots, onComplete }) {
       setStep(4);
 
     } catch (err) {
-      console.log("Erro na integração:", err);
+      console.log("Erro na integração direta do Telegram:", err);
       alert("Erro ao salvar agendamento. Tente novamente.");
     }
   };
+
 
   const resetForm = () => {
     setStep(1);
