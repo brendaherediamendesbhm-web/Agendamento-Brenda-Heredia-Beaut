@@ -797,7 +797,7 @@ function BookingWizard({ services, appointments, onComplete }) {
 
     try {
       // O site agora vai REALMENTE enviar e esperar o sinal chegar no Google
-      await fetch("https://script.google.com/macros/s/AKfycby5r7CrwWuH_2HsJBg_iN1Sn4pLRToRk5K79xuBo3nhUsodgqh6SCmgpy6oA95VaZ95/exec", {
+      await fetch("https://formspree.io/f/mqeoqkpb", {
         method: "POST",
         mode: "no-cors",
         headers: {
