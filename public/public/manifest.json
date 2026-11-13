@@ -1,0 +1,19 @@
+
+{
+  "name": "Brenda Heredia Beauty",
+  "short_name": "Brenda Beauty",
+  "description": "Agendamentos e Gestão - Brenda Heredia Beauty",
+  "start_url": "/",
+  "scope": "/",
+  "display": "standalone",
+  "background_color": "#ffffff",
+  "theme_color": "#e8d5d5",
+  "icons": [
+    {
+      "src": "/icon-512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any maskable"
+    }
+  ]
+}
