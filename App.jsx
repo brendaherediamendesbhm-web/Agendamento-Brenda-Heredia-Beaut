@@ -1,4 +1,5 @@
 import React, { useState, useEffect, useRef } from 'react';
+import ClientesF1, { encerrarSessaoF1 } from './ClientesF1.jsx';
 import { 
   Calendar as CalendarIcon, 
   Clock, 
@@ -76,7 +77,8 @@ export default function App() {
   const [isAdminLoggedIn, setIsAdminLoggedIn] = useState(false);
   const [adminPassword, setAdminPassword] = useState('');
   const [showPassword, setShowPassword] = useState(false);
-  const [loginError, setLoginError] = useState(false); 
+  const [loginError, setLoginError] = useState(false);
+  const [adminSection, setAdminSection] = useState('agenda'); 
 
   // Estado de controle para o formulário de bloqueio (Pausa/Folga)
   const [blockConfig, setBlockConfig] = useState({
@@ -271,14 +273,14 @@ export default function App() {
 
           <nav className="flex bg-[#FAF6F0] p-1 rounded-full border border-[#EBE0D5] w-full md:w-auto overflow-x-auto">
             <button 
-              onClick={() => setActiveTab('simulator')}
+              onClick={() => { encerrarSessaoF1(); setActiveTab('simulator'); }}
               className={`flex items-center gap-2 px-4 py-2 rounded-full text-xs font-semibold whitespace-nowrap ${activeTab === 'simulator' ? 'bg-[#E5A8A3] text-white shadow-sm' : 'text-[#7D6B63]'}`}
             >
               <Smartphone className="w-4 h-4" />
               Simulador WhatsApp Bot
             </button>
             <button 
-              onClick={() => setActiveTab('booking')}
+              onClick={() => { encerrarSessaoF1(); setActiveTab('booking'); }}
               className={`flex items-center gap-2 px-4 py-2 rounded-full text-xs font-semibold whitespace-nowrap ${activeTab === 'booking' ? 'bg-[#E5A8A3] text-white shadow-sm' : 'text-[#7D6B63]'}`}
             >
               <CalendarIcon className="w-4 h-4" />
@@ -538,6 +540,8 @@ export default function App() {
                     onClick={() => {
                       setIsAdminLoggedIn(false);
                       setAdminPassword('');
+                      setAdminSection('agenda');
+                      encerrarSessaoF1();
                       showToast("Sessão profissional encerrada.", "info");
                     }}
                     className="text-xs text-[#9E8B83] hover:text-rose-500 font-semibold underline"
@@ -546,6 +550,24 @@ export default function App() {
                   </button>
                 </div>
 
+                {/* Navegação exclusiva do painel profissional */}
+                <div className="flex flex-wrap gap-2 rounded-2xl border border-[#F0E6DC] bg-white p-3 shadow-sm" role="group" aria-label="Seções do painel profissional">
+                  <button type="button" aria-pressed={adminSection === 'agenda'}
+                    onClick={() => { encerrarSessaoF1(); setAdminSection('agenda'); }}
+                    className={`rounded-xl px-4 py-3 text-sm font-semibold transition-colors ${adminSection === 'agenda' ? 'bg-[#E5A8A3] text-white' : 'bg-[#FAF6F0] text-[#7D6B63]'}`}>
+                    📅 Agenda e horários
+                  </button>
+                  <button type="button" aria-pressed={adminSection === 'clientes'}
+                    onClick={() => setAdminSection('clientes')}
+                    className={`rounded-xl px-4 py-3 text-sm font-semibold transition-colors ${adminSection === 'clientes' ? 'bg-[#E5A8A3] text-white' : 'bg-[#FAF6F0] text-[#7D6B63]'}`}>
+                    💅 Minhas Clientes — Molde F1
+                  </button>
+                </div>
+
+                {adminSection === 'clientes' && <ClientesF1 />}
+
+                {adminSection === 'agenda' && (
+                  <div className="space-y-6">
                 {/* --- SEÇÃO DE GERENCIAMENTO DE HORÁRIOS E DIAS (FOLGAS) --- */}
                 <div className="grid grid-cols-1 md:grid-cols-12 gap-6 items-start">
                   
@@ -770,6 +792,8 @@ export default function App() {
                     </div>
                   )}
                 </div>
+                  </div>
+                )}
               </div>
             )}
 
