@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useRef } from 'react';
-import ClientesF1, { encerrarSessaoF1 } from './ClientesF1.jsx';
+import ClientesF1, { supabase, encerrarSessaoF1 } from './ClientesF1.jsx';
 import { 
   Calendar as CalendarIcon, 
   Clock, 
@@ -61,6 +61,12 @@ const injectStyles = () => {
   }
 };
 
+// O e-mail serve apenas como identificador interno do Supabase Auth.
+// É uma configuração pública de build, nunca guarde o PIN neste código.
+const ADMIN_EMAIL = (import.meta.env.VITE_ADMIN_EMAIL || '').trim().toLowerCase();
+const LOGIN_CONFIGURADO = Boolean(supabase && ADMIN_EMAIL);
+const usuarioPermitido = (user) => user?.email?.trim().toLowerCase() === ADMIN_EMAIL ? user : null;
+
 export default function App() {
   useEffect(() => {
     injectStyles();
@@ -74,11 +80,38 @@ export default function App() {
   const [toastType, setToastType] = useState('success'); 
 
   // Controle de segurança para o painel admin
-  const [isAdminLoggedIn, setIsAdminLoggedIn] = useState(false);
+  const [adminUser, setAdminUser] = useState(null);
+  const isAdminLoggedIn = Boolean(adminUser);
+  const [verificandoAdmin, setVerificandoAdmin] = useState(true);
+  const [entrandoAdmin, setEntrandoAdmin] = useState(false);
   const [adminPassword, setAdminPassword] = useState('');
   const [showPassword, setShowPassword] = useState(false);
   const [loginError, setLoginError] = useState(false);
   const [adminSection, setAdminSection] = useState('agenda'); 
+
+  // Recupera a sessão do mesmo Supabase Auth usado nas fichas de clientes.
+  // A autenticação real é validada pelo Supabase; não existe PIN no JavaScript.
+  useEffect(() => {
+    if (!LOGIN_CONFIGURADO) {
+      setVerificandoAdmin(false);
+      return;
+    }
+    let ativo = true;
+    const { data: { subscription } } = supabase.auth.onAuthStateChange((evento, sessao) => {
+      if (!ativo) return;
+      if (evento === 'SIGNED_OUT') setAdminUser(null);
+      else if (sessao?.user) setAdminUser(usuarioPermitido(sessao.user));
+    });
+    supabase.auth.getUser()
+      .then(({ data, error }) => {
+        if (ativo) {
+          setAdminUser(error ? null : usuarioPermitido(data?.user));
+          setVerificandoAdmin(false);
+        }
+      })
+      .catch(() => { if (ativo) { setAdminUser(null); setVerificandoAdmin(false); } });
+    return () => { ativo = false; subscription.unsubscribe(); };
+  }, []);
 
   // Estado de controle para o formulário de bloqueio (Pausa/Folga)
   const [blockConfig, setBlockConfig] = useState({
@@ -238,16 +271,48 @@ export default function App() {
     }, 1000);
   };
 
-  const handleAdminLogin = (e) => {
+  const handleAdminLogin = async (e) => {
     e.preventDefault();
-    if (adminPassword === '23181213') {
-      setIsAdminLoggedIn(true);
-      setLoginError(false);
-      showToast("Acesso autorizado! Bem-vinda, Brenda.", "success");
-    } else {
-      setLoginError(true); 
-      showToast("Senha incorreta. Acesso negado.", "error");
+    if (!LOGIN_CONFIGURADO) {
+      showToast('Acesso não configurado. Configure sua conta no Supabase antes de publicar.', 'error');
+      return;
     }
+    if (!/^\d{8}$/.test(adminPassword)) {
+      setLoginError(true);
+      showToast('Digite exatamente 8 números.', 'error');
+      return;
+    }
+    setEntrandoAdmin(true);
+    setLoginError(false);
+    try {
+      const { data, error } = await supabase.auth.signInWithPassword({
+        email: ADMIN_EMAIL,
+        password: adminPassword,
+      });
+      if (error || !usuarioPermitido(data?.user)) {
+        if (!error) await encerrarSessaoF1();
+        setAdminUser(null);
+        setLoginError(true);
+        showToast('Senha incorreta ou conta não configurada.', 'error');
+      } else {
+        setAdminUser(data.user);
+        showToast('Acesso autorizado! Bem-vinda ao painel.', 'success');
+      }
+    } catch {
+      setLoginError(true);
+      showToast('Falha na conexão. Verifique sua internet e tente novamente.', 'error');
+    } finally {
+      setAdminPassword('');
+      setEntrandoAdmin(false);
+    }
+  };
+
+  const handleAdminLogout = async () => {
+    await encerrarSessaoF1();
+    setAdminUser(null);
+    setAdminPassword('');
+    setAdminSection('agenda');
+    showToast('Sessão profissional encerrada.', 'info');
   };
 
   return (
@@ -273,14 +338,14 @@ export default function App() {
 
           <nav className="flex bg-[#FAF6F0] p-1 rounded-full border border-[#EBE0D5] w-full md:w-auto overflow-x-auto">
             <button 
-              onClick={() => { encerrarSessaoF1(); setActiveTab('simulator'); }}
+              onClick={() => { setActiveTab('simulator'); }}
               className={`flex items-center gap-2 px-4 py-2 rounded-full text-xs font-semibold whitespace-nowrap ${activeTab === 'simulator' ? 'bg-[#E5A8A3] text-white shadow-sm' : 'text-[#7D6B63]'}`}
             >
               <Smartphone className="w-4 h-4" />
               Simulador WhatsApp Bot
             </button>
             <button 
-              onClick={() => { encerrarSessaoF1(); setActiveTab('booking'); }}
+              onClick={() => { setActiveTab('booking'); }}
               className={`flex items-center gap-2 px-4 py-2 rounded-full text-xs font-semibold whitespace-nowrap ${activeTab === 'booking' ? 'bg-[#E5A8A3] text-white shadow-sm' : 'text-[#7D6B63]'}`}
             >
               <CalendarIcon className="w-4 h-4" />
@@ -480,7 +545,9 @@ export default function App() {
         {activeTab === 'admin' && (
           <div className="max-w-4xl mx-auto space-y-6">
             
-            {!isAdminLoggedIn ? (
+            {verificandoAdmin ? (
+              <div className="rounded-2xl bg-white p-6 text-sm text-[#7D6B63]">Verificando seu acesso seguro…</div>
+            ) : !isAdminLoggedIn ? (
               <div className="bg-white p-8 rounded-2xl border border-[#F0E6DC] shadow-sm max-w-md mx-auto text-center space-y-6 mt-12">
                 <div className="w-12 h-12 bg-[#F7E6E3] rounded-full flex items-center justify-center mx-auto text-[#B57C74]">
                   <Lock className="w-6 h-6" />
@@ -490,13 +557,21 @@ export default function App() {
                   <p className="text-xs text-[#9E8B83] mt-2">Esta área contém dados confidenciais das clientes. Introduza a senha profissional para acessar.</p>
                 </div>
 
+                {!LOGIN_CONFIGURADO && (
+                  <p role="alert" className="rounded-xl bg-amber-50 p-3 text-xs text-amber-900">
+                    Acesso ainda não configurado: crie seu usuário em Authentication &gt; Users no Supabase e adicione VITE_ADMIN_EMAIL na Vercel.
+                  </p>
+                )}
                 <form onSubmit={handleAdminLogin} className="space-y-4">
                   <div className="relative">
                     <input 
                       type={showPassword ? "text" : "password"}
                       inputMode="numeric"
-                      pattern="[0-9]*"
-                      placeholder="Digite a sua senha"
+                      pattern="[0-9]{8}"
+                      minLength={8}
+                      maxLength={8}
+                      autoComplete="current-password"
+                      placeholder="Senha numérica de 8 dígitos"
                       value={adminPassword}
                       onChange={(e) => {
                         setAdminPassword(e.target.value.replace(/\D/g, ''));
@@ -520,11 +595,12 @@ export default function App() {
                     </div>
                   )}
 
-                  <button 
+                  <button
                     type="submit"
-                    className="w-full bg-[#E5A8A3] hover:bg-[#DCA19C] text-white py-2.5 rounded-xl text-xs font-bold uppercase tracking-wider shadow-xs"
+                    disabled={!LOGIN_CONFIGURADO || entrandoAdmin}
+                    className="w-full bg-[#E5A8A3] hover:bg-[#DCA19C] text-white py-2.5 rounded-xl text-xs font-bold uppercase tracking-wider shadow-xs disabled:opacity-50"
                   >
-                    Entrar no Painel Seguro
+                    {entrandoAdmin ? 'Conferindo senha...' : 'Entrar no Painel Seguro'}
                   </button>
                 </form>
               </div>
@@ -537,13 +613,7 @@ export default function App() {
                   </div>
                   
                   <button 
-                    onClick={() => {
-                      setIsAdminLoggedIn(false);
-                      setAdminPassword('');
-                      setAdminSection('agenda');
-                      encerrarSessaoF1();
-                      showToast("Sessão profissional encerrada.", "info");
-                    }}
+                    onClick={handleAdminLogout}
                     className="text-xs text-[#9E8B83] hover:text-rose-500 font-semibold underline"
                   >
                     Bloquear Painel (Sair)
@@ -553,7 +623,7 @@ export default function App() {
                 {/* Navegação exclusiva do painel profissional */}
                 <div className="flex flex-wrap gap-2 rounded-2xl border border-[#F0E6DC] bg-white p-3 shadow-sm" role="group" aria-label="Seções do painel profissional">
                   <button type="button" aria-pressed={adminSection === 'agenda'}
-                    onClick={() => { encerrarSessaoF1(); setAdminSection('agenda'); }}
+                    onClick={() => setAdminSection('agenda')}
                     className={`rounded-xl px-4 py-3 text-sm font-semibold transition-colors ${adminSection === 'agenda' ? 'bg-[#E5A8A3] text-white' : 'bg-[#FAF6F0] text-[#7D6B63]'}`}>
                     📅 Agenda e horários
                   </button>
@@ -564,7 +634,7 @@ export default function App() {
                   </button>
                 </div>
 
-                {adminSection === 'clientes' && <ClientesF1 />}
+                {adminSection === 'clientes' && <ClientesF1 usuario={adminUser} />}
 
                 {adminSection === 'agenda' && (
                   <div className="space-y-6">

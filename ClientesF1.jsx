@@ -9,7 +9,9 @@ const SUPABASE_KEY = (
   import.meta.env.VITE_SUPABASE_PUBLISHABLE_KEY || ''
 ).trim();
 const configurado = /^https:\/\/.+\.supabase\.co\/?$/.test(SUPABASE_URL) && !!SUPABASE_KEY;
-const supabase = configurado ? createClient(SUPABASE_URL, SUPABASE_KEY, { auth: { persistSession: false } }) : null;
+export const supabase = configurado ? createClient(SUPABASE_URL, SUPABASE_KEY, {
+  auth: { persistSession: true, autoRefreshToken: true, detectSessionInUrl: false },
+}) : null;
 export function encerrarSessaoF1() {
   if (supabase) return supabase.auth.signOut().catch(() => {});
   return Promise.resolve();
@@ -86,11 +88,7 @@ function ResumoMao({ lado, cliente }) {
 
 // Renderize este componente SOMENTE dentro da área profissional do App.jsx.
 // Autenticação própria + RLS são obrigatórias para proteger os dados das clientes.
-export default function ClientesF1() {
-  const [usuario, setUsuario] = useState(null);
-  const [verificandoLogin, setVerificandoLogin] = useState(true);
-  const [email, setEmail] = useState('');
-  const [senha, setSenha] = useState('');
+export default function ClientesF1({ usuario }) {
   const [clientes, setClientes] = useState([]);
   const [busca, setBusca] = useState('');
   const [editandoId, setEditandoId] = useState(null);
@@ -98,18 +96,6 @@ export default function ClientesF1() {
   const [ocupado, setOcupado] = useState(false);
   const [erro, setErro] = useState('');
   const [mensagem, setMensagem] = useState('');
-
-  useEffect(() => {
-    if (!supabase) { setVerificandoLogin(false); return; }
-    let ativo = true;
-    supabase.auth.getUser().then(({ data }) => {
-      if (ativo) { setUsuario(data.user || null); setVerificandoLogin(false); }
-    }).catch(() => { if (ativo) setVerificandoLogin(false); });
-    const { data: { subscription } } = supabase.auth.onAuthStateChange((_ev, session) => {
-      if (ativo) setUsuario(session?.user || null);
-    });
-    return () => { ativo = false; subscription.unsubscribe(); };
-  }, []);
 
   const carregar = useCallback(async () => {
     if (!usuario || !supabase) return;
@@ -126,12 +112,6 @@ export default function ClientesF1() {
     `${c.nome} ${c.whatsapp || ''}`.toLocaleLowerCase('pt-BR').includes(busca.toLocaleLowerCase('pt-BR'))
   ), [clientes, busca]);
 
-  async function entrar(e) {
-    e.preventDefault(); setErro(''); setOcupado(true);
-    const { error } = await supabase.auth.signInWithPassword({ email: email.trim(), password: senha });
-    setSenha(''); setOcupado(false);
-    if (error) setErro('Não foi possível entrar. Confira o e-mail e a senha da conta cadastrada no Supabase.');
-  }
   function editar(cliente) {
     setFicha(fichaDoBanco(cliente)); setEditandoId(cliente.id); setErro(''); setMensagem('');
   }
@@ -168,10 +148,6 @@ export default function ClientesF1() {
     if (error) setErro(`Não foi possível excluir: ${error.message}`);
     else { setMensagem('Ficha excluída.'); await carregar(); }
   }
-  async function sair() {
-    await encerrarSessaoF1(); setClientes([]); setEditandoId(null); setErro(''); setMensagem('');
-  }
-
   return (
     <section className="rounded-2xl border border-[#eddae0] bg-white p-4 shadow-sm sm:p-6" aria-label="Minhas clientes: molde F1">
       <div className="mb-4 flex flex-wrap items-center justify-between gap-2">
@@ -179,19 +155,9 @@ export default function ClientesF1() {
           <h2 className="text-xl font-bold text-[#82495b]">Minhas Clientes</h2>
           <p className="text-xs text-[#987682]">Cadastro particular e numeração do molde F1</p>
         </div>
-        {usuario && <button type="button" onClick={sair} className="rounded-lg border border-[#eddae0] px-3 py-2 text-xs text-[#82495b]">Sair das fichas</button>}
       </div>
       {!configurado && <p role="alert" className="rounded-xl bg-amber-50 p-4 text-sm text-amber-900">Conexão pendente: configure VITE_SUPABASE_URL e VITE_SUPABASE_ANON_KEY na Vercel e republique.</p>}
-      {verificandoLogin && configurado && <p className="text-sm text-[#987682]">Verificando acesso…</p>}
-      {configurado && !usuario && !verificandoLogin && (
-        <form onSubmit={entrar} className="max-w-md space-y-3 rounded-xl bg-[#fff7f9] p-4">
-          <p className="text-sm font-semibold text-[#82495b]">Acesso privado às fichas</p>
-          <p className="text-xs text-[#987682]">Entre com a conta administrativa criada no Supabase Auth (diferente da senha atual do painel).</p>
-          <label className="block"><span className={legenda}>E-mail</span><input required type="email" autoComplete="username" className={input} value={email} onChange={e => setEmail(e.target.value)}/></label>
-          <label className="block"><span className={legenda}>Senha</span><input required type="password" autoComplete="current-password" className={input} value={senha} onChange={e => setSenha(e.target.value)}/></label>
-          <button disabled={ocupado} className="rounded-xl bg-[#ab7284] px-4 py-2.5 text-sm font-semibold text-white disabled:opacity-50">{ocupado ? 'Entrando...' : 'Entrar nas fichas'}</button>
-        </form>
-      )}
+      {configurado && !usuario && <p role="alert" className="rounded-xl bg-amber-50 p-4 text-sm text-amber-900">Sessão encerrada. Entre novamente pelo Painel Profissional.</p>}
       {erro && <p role="alert" className="my-3 rounded-xl bg-rose-50 p-3 text-sm text-rose-700">{erro}</p>}
       {mensagem && <p role="status" className="my-3 rounded-xl bg-green-50 p-3 text-sm text-green-800">{mensagem}</p>}
       {usuario && (
