@@ -122,13 +122,13 @@ export default function App() {
 
   // LISTA DE SERVIÇOS ATUALIZADA COM SEUS VALORES REAIS
   const services = [
-    { id: 'esmaltacao_gel', name: 'Esmaltação em Gel', category: 'Novos & Blindagem', duration: '1h30', price: 20, desc: 'Aplicação de esmalte em gel premium com secagem na cabine LED. Brilho duradouro por semanas sem descascar.' },
-    { id: 'banho_gel', name: 'Banho de Gel', category: 'Novos & Blindagem', duration: '2h45', price: 20, desc: 'Ideal para blindar e fortalecer o crescimento das unhas naturais com camada de gel premium.' },
-    { id: 'along_f1', name: 'Alongamento Molde F1', category: 'Novos & Blindagem', duration: '3h00', price: 30, desc: 'Extensão rápida e sofisticada utilizando a técnica moderna do Molde F1.' },
-    { id: 'manut_banho', name: 'Manutenção de Banho de Gel', category: 'Manutenções', duration: '2h15', price: 10, desc: 'Manutenção periódica para repor a estrutura do gel nas unhas em crescimento.' },
-    { id: 'manut_f1', name: 'Manutenção de Molde F1', category: 'Manutenções', duration: '2h30', price: 20, desc: 'Nivelamento e reposicionamento do alongamento feito na técnica F1.' },
-    { id: 'remocao', name: 'Remoção de Gel / Alongamento', category: 'Remoções e Extras', duration: '1h00', price: 15, desc: 'Retirada segura do produto sem danificar a base da unha natural.' },
-    { id: 'conserto', name: 'Conserto de Unha Avulsa', category: 'Remoções e Extras', duration: '0h30', price: 5, desc: 'Reparação de emergência para uma unha partida ou danificada.' }
+    { id: 'esmaltacao_gel', name: 'Esmaltação em Gel', category: 'Novos & Blindagem', duration: '1h30', price: 30, desc: 'Aplicação de esmalte em gel premium com secagem na cabine LED. Brilho duradouro por semanas sem descascar.' },
+    { id: 'banho_gel', name: 'Banho de Gel', category: 'Novos & Blindagem', duration: '2h45', price: 40, desc: 'Ideal para blindar e fortalecer o crescimento das unhas naturais com camada de gel premium.' },
+    { id: 'along_f1', name: 'Alongamento Molde F1', category: 'Novos & Blindagem', duration: '3h00', price: 70, desc: 'Extensão rápida e sofisticada utilizando a técnica moderna do Molde F1.' },
+    { id: 'manut_banho', name: 'Manutenção de Banho de Gel', category: 'Manutenções', duration: '2h15', price: 25, desc: 'Manutenção periódica para repor a estrutura do gel nas unhas em crescimento.' },
+    { id: 'manut_f1', name: 'Manutenção de Molde F1', category: 'Manutenções', duration: '2h30', price: 40, desc: 'Nivelamento e reposicionamento do alongamento feito na técnica F1.' },
+    { id: 'remocao', name: 'Remoção de Gel / Alongamento', category: 'Remoções e Extras', duration: '1h00', price: 20, desc: 'Retirada segura do produto sem danificar a base da unha natural.' },
+    { id: 'conserto', name: 'Conserto de Unha Avulsa', category: 'Remoções e Extras', duration: '0h30', price: 7, desc: 'Reparação de emergência para uma unha partida ou danificada.' }
   ];
 
   // Base padrão de horários de atendimento do Studio
